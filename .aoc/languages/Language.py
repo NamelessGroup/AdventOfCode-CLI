@@ -14,11 +14,11 @@ class Language(ABC):
         pass
 
     @abstractmethod
-    def getRunCommand(self, day: str, task: int, sourcePath: str) -> [str]:
+    def getRunCommand(self, day: str, task: int, sourcePath: str) -> str:
         pass
 
     @abstractmethod
-    def getTestCommand(self, day: int, task: int, sourcePath: str) -> [str]:
+    def getTestCommand(self, day: int, task: int, sourcePath: str) -> str:
         pass
 
     @abstractmethod

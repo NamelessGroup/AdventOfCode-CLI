@@ -9,10 +9,10 @@ class Python(Language):
         return ".aoc/file_templates/python/"
 
     def getRunCommand(self, day, task, sourcePath):
-        return ["python", "-u", f"{sourcePath}/runner.py", str(task)]
+        return f"python -u {sourcePath}/runner.py {str(task)}"
 
     def getTestCommand(self, day, task, sourcePath):
-        return ["python", "-u", f"{sourcePath}/runner.py", str(task), "test"]
+        return f"python -u {sourcePath}/runner.py {str(task)} test"
 
     def hasIndividualTaskRunCommands(self):
         return True
