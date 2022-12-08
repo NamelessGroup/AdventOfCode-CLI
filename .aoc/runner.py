@@ -3,23 +3,43 @@ import time
 
 def runDay(day, console, lang):
     if lang.hasIndividualTaskRunCommands():
+        prepareTask(day, 1, console, lang)
         runTask(day, 1, console, lang)
+        prepareTask(day, 2, console, lang)
         runTask(day, 2, console, lang)
     else:
+        prepareTask(day, -1, console, lang)
         runTask(day, -1, console, lang)
 
 def testDay(day, console, lang):
     if lang.hasIndividualTaskRunCommands():
+        prepareTask(day, 1, console, lang)
         runTask(day, 1, console, lang, True)
+        prepareTask(day, 2, console, lang)
         runTask(day, 2, console, lang, True)
     else:
+        prepareTask(day, -1, console, lang)
         runTask(day, -1, console, lang, True)
 
+def prepareTask(day, task, console, lang):
+    taskStr = f"Preparing Task {task}"
+    if task < 0:
+        taskStr = f"Preparing all tasks"
+    preTasks = lang.getPreRunCommand(day, task, f"./src/day{str(day).rjust(2, '0')}")
+    if len(preTasks) <= 0:
+        return
+    console.rule(f"[yellow]{taskStr}")
+    for preTask in preTasks:
+        if type(preTask) is tuple:
+            runPreRunCommand(console, preTask[1], preTask[0])
+        else:
+            runPreRunCommand(console, preTask)
+
 def runTask(day, task, console, lang, test=False):
-    if task >= 0:
-        console.rule(f"[yellow]Task {task}")
-    else:
-        console.rule("[yellow]All tasks")
+    taskStr = f"Task {task}"
+    if task < 0:
+        taskStr = "All tasks"
+    console.rule(f"[yellow]{taskStr}")
     startTime = time.time()
     if test:
         cmd = lang.getTestCommand(day, task, f"./src/day{str(day).rjust(2, '0')}")
@@ -43,6 +63,19 @@ def runTask(day, task, console, lang, test=False):
     endTime = time.time()
     timeDiff = round(endTime - startTime, 3)
     if p.returncode == 0:
-        console.log(f"[green]Task {task} finished execution successfully in {timeDiff}s.")
+        console.log(f"[green]{taskStr} finished execution successfully in {timeDiff}s.")
     else:
-        console.log(f"[bold red]Task {task} failed execution in {timeDiff}s!")
+        console.log(f"[bold red]{taskStr} failed execution in {timeDiff}s!")
+
+def runPreRunCommand(console, command, name=""):
+    p = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    p.wait()
+
+    taskName = name or command
+
+    if p.returncode == 0:
+        console.log(f"[green]{taskName}... :heavy_check_mark:")
+    else:
+        console.log(f"[red bold]{taskName}... :cross_mark:")
+        console.log(f"Task failed with code {p.returncode}")
+        exit(1)

@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import Tuple
 
 class Language(ABC):
 
@@ -13,12 +14,15 @@ class Language(ABC):
     def postCopy(self, day: int, target: str) -> None:
         pass
 
+    def getPreRunCommand(self, day: str, task: int, sourcePath: str) -> [str | Tuple[str, str]]:
+        return []
+
     @abstractmethod
-    def getRunCommand(self, day: str, task: int, sourcePath: str) -> [str]:
+    def getRunCommand(self, day: str, task: int, sourcePath: str) -> str:
         pass
 
     @abstractmethod
-    def getTestCommand(self, day: int, task: int, sourcePath: str) -> [str]:
+    def getTestCommand(self, day: int, task: int, sourcePath: str) -> str:
         pass
 
     @abstractmethod
