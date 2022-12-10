@@ -17,6 +17,10 @@ def makeNewDay(day, console, lang):
     shutil.copytree(lang.getTemplateDirectory(), newDirectoryPath + "/", dirs_exist_ok=True)
     console.log(f"Copied {lang.getFormattedName()} template.")
 
+    # Run postCopy
+    lang.postCopy(day, newDirectoryPath)
+    console.log(f"Ran postCopy script for {lang.getFormattedName()}")
+
 def getInput(day, console):
     if not os.path.exists(".aoc/SESSION_TOKEN"):
         console.log("[red]You need to write your session token to the file '.aoc/SESSION_TOKEN' in order to download your input!")
