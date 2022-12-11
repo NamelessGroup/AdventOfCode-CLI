@@ -18,7 +18,7 @@ if __name__ == '__main__':
        console.print(f"[red]{e}")
        exit(1)
 
-    lang = languages.getLanguage(config['language'])
+    lang = languages.getLanguage(config['language'], config['language-config'])
     day = config['day']
     
     if config['command'] == "init":

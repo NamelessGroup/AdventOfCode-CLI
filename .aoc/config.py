@@ -9,6 +9,7 @@ def getArgumentParser() -> argparse.ArgumentParser:
         description = "Commandline-Interface for interacting with the Advent of Code more easily",
     )
     parser.add_argument('-l', '--language', help="Select the programming language to be used.", choices=languages.LANGUAGES)
+    parser.add_argument('-lc', '--language-config', help="Set options for the specified language. Must be a JSON-like object.", dest="language-config")
     subparsers = parser.add_subparsers(help="Command to execute", required=True, dest="command")
 
     init = subparsers.add_parser('init', help="Creates a new directory structure for a day")
