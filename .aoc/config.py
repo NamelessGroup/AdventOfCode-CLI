@@ -36,8 +36,14 @@ def getConfig() -> dict:
     parser = getArgumentParser()
     result = vars(parser.parse_args())
 
+    if result['language-config'] != None:
+        result['language-config'] = json.loads(result['language-config'])
+
     config = getFileConfig()
     config.update({k: v for k, v in result.items() if v is not None})
+
+    if 'language-config' not in config:
+        config['language-config'] = {}
 
     return config
 

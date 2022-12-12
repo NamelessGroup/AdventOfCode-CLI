@@ -3,7 +3,7 @@ from typing import Tuple
 
 class Language(ABC):
 
-    def __init__(self, **options):
+    def __init__(self, options):
         pass
 
     @abstractmethod
