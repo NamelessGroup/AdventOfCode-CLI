@@ -1,25 +1,33 @@
 import subprocess
 import time
 
-def runDay(day, console, lang):
+def runDay(day, console, lang, task):
     if lang.hasIndividualTaskRunCommands():
-        prepareTask(day, 1, console, lang)
-        runTask(day, 1, console, lang)
-        prepareTask(day, 2, console, lang)
-        runTask(day, 2, console, lang)
+        if task != -1:
+            prepareAndRun(day, task, console, lang)
+        else:
+            prepareAndRun(day, 1, console, lang)
+            prepareAndRun(day, 2, console, lang)
     else:
-        prepareTask(day, -1, console, lang)
-        runTask(day, -1, console, lang)
+        prepareAndRun(day, -1, console, lang)
 
-def testDay(day, console, lang):
+def testDay(day, console, lang, task):
     if lang.hasIndividualTaskRunCommands():
-        prepareTask(day, 1, console, lang)
-        runTask(day, 1, console, lang, True)
-        prepareTask(day, 2, console, lang)
-        runTask(day, 2, console, lang, True)
+        if task != -1:
+            prepareAndTest(day, task, console, lang)
+        else:
+            prepareAndTest(day, 1, console, lang)
+            prepareAndTest(day, 2, console, lang)
     else:
-        prepareTask(day, -1, console, lang)
-        runTask(day, -1, console, lang, True)
+        prepareAndTest(day, -1, console, lang)
+
+def prepareAndRun(day, task, console, lang):
+    prepareTask(day, task, console, lang)
+    runTask(day, task, console, lang)
+
+def prepareAndTest(day, task, console, lang):
+    prepareTask(day, task, console, lang)
+    runTask(day, task, console, lang, True)
 
 def prepareTask(day, task, console, lang):
     taskStr = f"Preparing Task {task}"

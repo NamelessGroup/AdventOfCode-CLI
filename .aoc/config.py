@@ -17,9 +17,11 @@ def getArgumentParser() -> argparse.ArgumentParser:
 
     run = subparsers.add_parser('run', help="Runs the code for a given day")
     run.add_argument('day', type=int, help="Specify the day to run.")
+    run.add_argument('task', type=int, help="Specify the task to run. Default: Run both tasks.", required=False, default=-1)
 
     test = subparsers.add_parser('test', help="Tests the code for a given day")
     test.add_argument('day', type=int, help="Specify the day to test.")
+    run.add_argument('task', type=int, help="Specify the task to test. Default: Run both tasks.", required=False, default=-1)
 
     return parser
 

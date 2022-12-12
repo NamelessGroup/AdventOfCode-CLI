@@ -28,9 +28,9 @@ if __name__ == '__main__':
 
     elif config['command'] == "run":
         with console.status(f"Running day {day}..."):
-            runDay(day, console, lang)
+            runDay(day, console, lang, config['task'])
     elif config['command'] == "test":
         with console.status(f"Running day {day}..."):
-            testDay(day, console, lang)
+            testDay(day, console, lang, config['task'])
     else:
         console.print(f"[red]Invalid command '{config['command']}'")
