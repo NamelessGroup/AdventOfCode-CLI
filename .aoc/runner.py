@@ -1,5 +1,6 @@
 import subprocess
 import time
+from os.path import abspath
 
 def runDay(day, console, lang, task):
     if lang.hasIndividualTaskRunCommands():
@@ -33,7 +34,7 @@ def prepareTask(day, task, console, lang):
     taskStr = f"Preparing Task {task}"
     if task < 0:
         taskStr = f"Preparing all tasks"
-    preTasks = lang.getPreRunCommand(day, task, f"./src/day{str(day).rjust(2, '0')}")
+    preTasks = lang.getPreRunCommand(day, task, abspath(f"./src/day{str(day).rjust(2, '0')}"))
     if len(preTasks) <= 0:
         return
     console.rule(f"[yellow]{taskStr}")
@@ -50,9 +51,9 @@ def runTask(day, task, console, lang, test=False):
     console.rule(f"[yellow]{taskStr}")
     startTime = time.time()
     if test:
-        cmd = lang.getTestCommand(day, task, f"./src/day{str(day).rjust(2, '0')}")
+        cmd = lang.getTestCommand(day, task, abspath(f"./src/day{str(day).rjust(2, '0')}"))
     else:
-        cmd = lang.getRunCommand(day, task, f"./src/day{str(day).rjust(2, '0')}")
+        cmd = lang.getRunCommand(day, task, abspath(f"./src/day{str(day).rjust(2, '0')}"))
     p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
     buf = b""

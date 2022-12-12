@@ -1,12 +1,13 @@
 import os
 import requests
 import shutil
+from os.path import abspath
 
 AOC_BASE_URL = "https://adventofcode.com"
 AOC_YEAR = 2022
 
 def makeNewDay(day, console, lang):
-    newDirectoryPath = f"src/day{str(day).rjust(2, '0')}"
+    newDirectoryPath = abspath(f"src/day{str(day).rjust(2, '0')}")
 
     # Create new directory
     if not os.path.exists(newDirectoryPath):
