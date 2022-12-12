@@ -54,7 +54,8 @@ def runTask(day, task, console, lang, test=False):
         cmd = lang.getTestCommand(day, task, abspath(f"./src/day{str(day).rjust(2, '0')}"))
     else:
         cmd = lang.getRunCommand(day, task, abspath(f"./src/day{str(day).rjust(2, '0')}"))
-    p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    cwd = lang.getRunCwd(day, task, abspath(f"./src/day{str(day).rjust(2, '0')}"))
+    p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, cwd=cwd)
 
     buf = b""
     while p.poll() is None:
@@ -77,7 +78,8 @@ def runTask(day, task, console, lang, test=False):
         console.log(f"[bold red]{taskStr} failed execution in {timeDiff}s!")
 
 def runPreRunCommand(console, command, name=""):
-    p = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    cwd = lang.getPreRunCwd(day, task, abspath(f"./src/day{str(day).rjust(2, '0')}"))
+    p = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, cwd=cwd)
     p.wait()
 
     taskName = name or command
