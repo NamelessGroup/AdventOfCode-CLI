@@ -1,31 +1,40 @@
 import subprocess
 import time
+from os.path import abspath
 
-def runDay(day, console, lang):
+def runDay(day, console, lang, task):
     if lang.hasIndividualTaskRunCommands():
-        prepareTask(day, 1, console, lang)
-        runTask(day, 1, console, lang)
-        prepareTask(day, 2, console, lang)
-        runTask(day, 2, console, lang)
+        if task != -1:
+            prepareAndRun(day, task, console, lang)
+        else:
+            prepareAndRun(day, 1, console, lang)
+            prepareAndRun(day, 2, console, lang)
     else:
-        prepareTask(day, -1, console, lang)
-        runTask(day, -1, console, lang)
+        prepareAndRun(day, -1, console, lang)
 
-def testDay(day, console, lang):
+def testDay(day, console, lang, task):
     if lang.hasIndividualTaskRunCommands():
-        prepareTask(day, 1, console, lang)
-        runTask(day, 1, console, lang, True)
-        prepareTask(day, 2, console, lang)
-        runTask(day, 2, console, lang, True)
+        if task != -1:
+            prepareAndTest(day, task, console, lang)
+        else:
+            prepareAndTest(day, 1, console, lang)
+            prepareAndTest(day, 2, console, lang)
     else:
-        prepareTask(day, -1, console, lang)
-        runTask(day, -1, console, lang, True)
+        prepareAndTest(day, -1, console, lang)
+
+def prepareAndRun(day, task, console, lang):
+    prepareTask(day, task, console, lang)
+    runTask(day, task, console, lang)
+
+def prepareAndTest(day, task, console, lang):
+    prepareTask(day, task, console, lang)
+    runTask(day, task, console, lang, True)
 
 def prepareTask(day, task, console, lang):
     taskStr = f"Preparing Task {task}"
     if task < 0:
         taskStr = f"Preparing all tasks"
-    preTasks = lang.getPreRunCommand(day, task, f"./src/day{str(day).rjust(2, '0')}")
+    preTasks = lang.getPreRunCommand(day, task, abspath(f"./src/day{str(day).rjust(2, '0')}"))
     if len(preTasks) <= 0:
         return
     console.rule(f"[yellow]{taskStr}")
@@ -42,10 +51,11 @@ def runTask(day, task, console, lang, test=False):
     console.rule(f"[yellow]{taskStr}")
     startTime = time.time()
     if test:
-        cmd = lang.getTestCommand(day, task, f"./src/day{str(day).rjust(2, '0')}")
+        cmd = lang.getTestCommand(day, task, abspath(f"./src/day{str(day).rjust(2, '0')}"))
     else:
-        cmd = lang.getRunCommand(day, task, f"./src/day{str(day).rjust(2, '0')}")
-    p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        cmd = lang.getRunCommand(day, task, abspath(f"./src/day{str(day).rjust(2, '0')}"))
+    cwd = lang.getRunCwd(day, task, abspath(f"./src/day{str(day).rjust(2, '0')}"))
+    p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, cwd=cwd)
 
     buf = b""
     while p.poll() is None:
@@ -68,7 +78,8 @@ def runTask(day, task, console, lang, test=False):
         console.log(f"[bold red]{taskStr} failed execution in {timeDiff}s!")
 
 def runPreRunCommand(console, command, name=""):
-    p = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    cwd = lang.getPreRunCwd(day, task, abspath(f"./src/day{str(day).rjust(2, '0')}"))
+    p = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, cwd=cwd)
     p.wait()
 
     taskName = name or command

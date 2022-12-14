@@ -8,5 +8,5 @@ LANGUAGES_MAP = {
 
 LANGUAGES = LANGUAGES_MAP.keys()
 
-def getLanguage(lang: str) -> Language:
-    return LANGUAGES_MAP[lang]()
+def getLanguage(lang: str, langOptions) -> Language:
+    return LANGUAGES_MAP[lang](langOptions)

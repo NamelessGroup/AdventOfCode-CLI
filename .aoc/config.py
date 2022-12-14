@@ -16,9 +16,11 @@ def getArgumentParser() -> argparse.ArgumentParser:
 
     run = subparsers.add_parser('run', help="Runs the code for a given day")
     run.add_argument('day', type=int, help="Specify the day to run.")
+    run.add_argument('task', type=int, help="Specify the task to run. Default: Run both tasks.", default=-1, nargs="?")
 
     test = subparsers.add_parser('test', help="Tests the code for a given day")
     test.add_argument('day', type=int, help="Specify the day to test.")
+    test.add_argument('task', type=int, help="Specify the task to test. Default: Run both tasks.", default=-1, nargs="?")
 
     return parser
 
@@ -37,6 +39,15 @@ def getConfig() -> dict:
 
     config = getFileConfig()
     config.update({k: v for k, v in result.items() if v is not None})
+
+    try:
+        languageConfigFile = open(f"./.aoc/{config['language']}.json")
+        languageConfig = json.loads(languageConfigFile.read())
+    except OSError:
+        # Language config doesn't exist
+        languageConfig = {}
+
+    config['language-config'] = languageConfig
 
     return config
 
