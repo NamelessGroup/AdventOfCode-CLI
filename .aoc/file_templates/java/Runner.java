@@ -1,5 +1,3 @@
-package INSERT_PACKAGE_NAME_HERE;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,8 +6,13 @@ import java.util.Scanner;
 public class Runner {
 
     public static void main(String[] args) {
+        if (args.length < 2) {
+            System.out.println("Error with the run command");
+            return;
+        }
+
         // Load input file
-        File file = new File(args.length <= 2 || args[1].equals("test") ? "test" : "input");
+        File file = new File(args[1] + (args.length >= 3 && args[1].equals("test") ? "test" : "input"));
         if (!file.exists()) {
             System.out.println("File not found");
             return;
