@@ -40,9 +40,9 @@ def prepareTask(day, task, console, lang):
     console.rule(f"[yellow]{taskStr}")
     for preTask in preTasks:
         if type(preTask) is tuple:
-            runPreRunCommand(console, preTask[1], preTask[0])
+            runPreRunCommand(day, task, console, lang, preTask[1], preTask[0])
         else:
-            runPreRunCommand(console, preTask)
+            runPreRunCommand(day, task, console, lang, preTask)
 
 def runTask(day, task, console, lang, test=False):
     taskStr = f"Task {task}"
@@ -77,7 +77,7 @@ def runTask(day, task, console, lang, test=False):
     else:
         console.log(f"[bold red]{taskStr} failed execution in {timeDiff}s!")
 
-def runPreRunCommand(console, command, name=""):
+def runPreRunCommand(day, task, console, lang, command, name=""):
     cwd = lang.getPreRunCwd(day, task, abspath(f"./src/day{str(day).rjust(2, '0')}"))
     p = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, cwd=cwd)
     p.wait()
