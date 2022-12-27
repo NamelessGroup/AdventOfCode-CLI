@@ -1,6 +1,7 @@
 from .Language import Language
 from typing import Tuple
 
+
 class Java(Language):
 
     def getFormattedName(self) -> str:
@@ -31,8 +32,7 @@ class Java(Language):
             file.write(content)
 
     def getPreRunCommand(self, day: str, task: int, sourcePath: str) -> [str | Tuple[str, str]]:
-        sourcePath = sourcePath[2::]
-        return [f"javac {sourcePath}/Runner.java {sourcePath}/Task1.java {sourcePath}/Task2.java"]
+        return [f"javac Runner.java Task1.java Task2.java"]
 
     def getRunCommand(self, day: str, task: int, sourcePath: str) -> str:
         sourcePath = sourcePath[2::]
@@ -45,3 +45,5 @@ class Java(Language):
     def hasIndividualTaskRunCommands(self) -> bool:
         return True
 
+    def getRunCwd(self, day: str, task: int, sourcePath: str) -> str | None:
+        return f"{sourcePath}/day{str(day).rjust(2, '0')}"
