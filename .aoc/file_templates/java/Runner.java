@@ -30,9 +30,10 @@ public class Runner {
         }
 
         // Start task
+        Tasks t = new Tasks();
         switch (args.length > 0 ? Integer.parseInt(args[0]) : 1) {
-            case 1 -> Task1.main(lines.toArray(new String[0]));
-            case 2 -> Task2.main(lines.toArray(new String[0]));
+            case 1 -> t.taskOne(lines.toArray(new String[0]));
+            case 2 -> t.taskTwo(lines.toArray(new String[0]));
             default -> System.out.println("Task not found");
         }
     }

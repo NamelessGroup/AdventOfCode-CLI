@@ -11,7 +11,7 @@ class Java(Language):
         return ".aoc/file_templates/java/"
 
     def getPreRunCommand(self, day: str, task: int, sourcePath: str) -> [str | Tuple[str, str]]:
-        return [f"javac Runner.java Task1.java Task2.java"]
+        return [f"javac Runner.java Tasks.java"]
 
     def getRunCommand(self, day: str, task: int, sourcePath: str) -> str:
         return f"java Runner {task} {sourcePath}\\"
