@@ -5,24 +5,25 @@ import (
 	"os"
 )
 
-func Error(message string) {
+func PrintError(message string) {
 	fmt.Println(message)
 	os.Exit(1)
 }
 
-func Warn(message string) {
+
+func PrintWarning(message string) {
 	fmt.Println(message)
 }
 
-func Log(message string) {
+func PrintLog(message string) {
 	fmt.Println(message)
 
 }
 
-func Debug(message string) {
+func PrintDebug(message string) {
 	fmt.Println(message)
 }
 
-func Success(message string) {
+func PrintSuccess(message string) {
 	fmt.Println(message)
 }
