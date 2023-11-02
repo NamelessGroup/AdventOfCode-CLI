@@ -6,7 +6,7 @@ import (
 )
 
 var testCommand = &cobra.Command{
-	Use:   "solve [task]",
+	Use:   "test [task]",
 	Short: "Test the given task (1 or 2) against the example data.",
 	Long:  "Solves the given task (1 or 2) against the example data. \n Uses the specified day or current day. \n Uses the specified language or default language.",
 	Run: func(cmd *cobra.Command, args []string) {
@@ -22,7 +22,7 @@ var testCommand = &cobra.Command{
 			return
 		}
 
-		print(fmt.Sprintf("Testing task %d of day %d in year %d using language %s", task, day, year, lang))
+		PrintDebug(fmt.Sprintf("Testing task %d of day %d in year %d using language %s", task, day, year, lang))
 	},
 }
 

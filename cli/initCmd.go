@@ -16,7 +16,7 @@ var initCommand = &cobra.Command{
 			return
 		}
 
-		print(fmt.Sprintf("Initializing day %d in year %d using language %s", day, year, lang))
+		PrintDebug(fmt.Sprintf("Initializing day %d in year %d using language %s", day, year, lang))
 	},
 }
 
