@@ -1,9 +1,9 @@
 package main
 
 import (
-	"fmt"
+	"aoc-cli/cli"
 )
 
 func main() {
-	fmt.Println("Hey AOC")
+	cli.Execute()
 }
