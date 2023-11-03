@@ -17,6 +17,10 @@ var rootCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		cli.PrintWarning("No command specified")
 	},
+	PersistentPreRun: func(cmd *cobra.Command, args []string) {
+		debug, _ := cmd.Flags().GetBool("debug")
+		cli.PrintDebugMessages = debug
+	},
 }
 
 func addPersistentFlags(cmd *cobra.Command) {
@@ -25,6 +29,7 @@ func addPersistentFlags(cmd *cobra.Command) {
 	cmd.PersistentFlags().StringP("lang", "l", "python", "Language to run")
 	cmd.PersistentFlags().IntP("day", "d", currentTime.Day(), "Day to run")
 	cmd.PersistentFlags().IntP("year", "y", currentTime.Year(), "Year to run")
+	cmd.PersistentFlags().Bool("debug", false, "Enable debug output")
 }
 
 func Execute() {

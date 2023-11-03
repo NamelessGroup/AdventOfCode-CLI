@@ -13,6 +13,8 @@ type Format struct {
 	italic    bool
 }
 
+var PrintDebugMessages = false
+
 func PrintError(message string) {
 	Print(message, color.FgRed, Format{false, false, false}, true)
 	os.Exit(1)
@@ -31,7 +33,9 @@ func PrintLogFmt(message string, a ...any) {
 }
 
 func PrintDebug(message string) {
-	Print(message, color.FgMagenta, Format{false, false, true}, true)
+	if PrintDebugMessages {
+		Print(message, color.FgMagenta, Format{false, false, true}, true)
+	}
 }
 
 func PrintDebugFmt(message string, a ...any) {
