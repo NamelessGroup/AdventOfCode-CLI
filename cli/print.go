@@ -2,6 +2,7 @@ package cli
 
 import (
 	"os"
+	"fmt"
 	"github.com/fatih/color"
 )
 
@@ -16,20 +17,40 @@ func PrintError(message string) {
 	os.Exit(1)
 }
 
+func PrintErrorFmt(message string, a ...any) {
+	PrintError(fmt.Sprintf(message, a...))
+}
+
 func PrintLog(message string, breakAtEnd bool) {
 	Print(message, color.FgWhite, Format{false, false, false}, breakAtEnd)
+}
+
+func PrintLogFmt(message string, a ...any) {
+	PrintLog(fmt.Sprintf(message, a...), true)
 }
 
 func PrintDebug(message string) {
 	Print(message, color.FgCyan, Format{false, false, true}, true)
 }
 
+func PrintDebugFmt(message string, a ...any) {
+	PrintDebug(fmt.Sprintf(message, a...))
+}
+
 func PrintSuccess(message string) {
 	Print(message, color.FgGreen, Format{false, true, false}, true)
 }
 
+func PrintSuccessFmt(message string, a ...any) {
+	PrintSuccess(fmt.Sprintf(message, a...))
+}
+
 func PrintWarning(message string) {
 	Print(message, color.FgYellow, Format{false, false, false}, true)
+}
+
+func PrintWarningFmt(message string, a ...any) {
+	PrintWarning(fmt.Sprintf(message, a...))
 }
 
 func Print(message string, col color.Attribute, format Format, breakAtEnd bool) {
