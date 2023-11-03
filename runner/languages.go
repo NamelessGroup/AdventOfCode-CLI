@@ -1,18 +1,18 @@
 package runner
 
 import (
-	cli "aoc-cli/output"
 	"aoc-cli/runner/languages"
+	"errors"
 )
 
-func ResolveLanguage(lang string) Language {
+func ResolveLanguage(lang string) (Language, error) {
 	languageMap := map[string]Language{
 		"test": languages.Test{},
 	}
 
 	if languageMap[lang] == nil {
-		cli.PrintErrorFmt("Error resolving language %s", lang)
+		return nil, errors.New("Language not found")
 	}
 
-	return languageMap[lang]
+	return languageMap[lang], nil
 }

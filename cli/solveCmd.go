@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/spf13/cobra"
 	"aoc-cli/output"
+	"aoc-cli/runner"
 )
 
 var solveCommand = &cobra.Command{
@@ -24,6 +25,7 @@ var solveCommand = &cobra.Command{
 		}
 
 		cli.PrintDebug(fmt.Sprintf("Solving task %d of day %d in year %d using language %s", task, day, year, lang))
+		runner.SolveDay(day, task, lang)
 	},
 }
 

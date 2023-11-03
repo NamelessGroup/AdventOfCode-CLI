@@ -30,6 +30,7 @@ var initCommand = &cobra.Command{
 			cli.PrintWarning("Could not access web page")
 			return
 		}
+		// TODO: Create language files
 	},
 }
 

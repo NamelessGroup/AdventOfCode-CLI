@@ -102,17 +102,13 @@ func runTask(day int, task int, rawCommand string) {
 	}
 }
 
-func SolveDay(day int, task int, lang string) {
-	languageObject := ResolveLanguage(lang)
-
+func SolveDay(day int, task int, languageObject Language) {
 	prepareTask(day, task, languageObject)
 	rawRunCommand := languageObject.GetSolveCommand(day, task)
 	runTask(day, task, rawRunCommand)
 }
 
-func TestDay(day int, task int, lang string) {
-	languageObject := ResolveLanguage(lang)
-
+func TestDay(day int, task int, languageObject Language) {
 	prepareTask(day, task, languageObject)
 	rawRunCommand := languageObject.GetTestCommand(day, task)
 	runTask(day, task, rawRunCommand)

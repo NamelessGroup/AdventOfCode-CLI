@@ -1,11 +1,12 @@
 package cli
 
 import (
+	cli "aoc-cli/output"
+	"aoc-cli/runner"
 	"errors"
 	"fmt"
 	"time"
 
-	"aoc-cli/output"
 	"github.com/spf13/cobra"
 )
 
@@ -39,33 +40,34 @@ func addCommand(cmd *cobra.Command) {
 /*
 Returns day, year, lang, error
 */
-func getFlags(cmd *cobra.Command) (int, int, string, error) {
+func getFlags(cmd *cobra.Command) (int, int, runner.Language, error) {
 	day, dayErr := cmd.Flags().GetInt("day")
-	year, yearErr := cmd.Flags().GetInt("year") 
+	year, yearErr := cmd.Flags().GetInt("year")
 	if dayErr != nil {
-		return -1, -1, "", dayErr
+		return -1, -1, nil, dayErr
 	}
 	if yearErr != nil {
-		return -1, -1, "", yearErr
+		return -1, -1, nil, yearErr
 	}
 
 	currentTime := time.Now()
 	if year == currentTime.Year() && day > currentTime.Day() {
-		return -1, -1, "", errors.New("Day must be before tomorrow")
+		return -1, -1, nil, errors.New("Day must be before tomorrow")
 	}
 	if year < 2015 || year > currentTime.Year() {
-		return -1, -1, "", fmt.Errorf("Year must be between 2015 and %d", currentTime.Year())
+		return -1, -1, nil, fmt.Errorf("Year must be between 2015 and %d", currentTime.Year())
 	}
-	if day < 1 || day > 25  {
-		return -1, -1, "", errors.New("Day must be between 1 and 25")
+	if day < 1 || day > 25 {
+		return -1, -1, nil, errors.New("Day must be between 1 and 25")
 	}
 
 	lang, langErr := cmd.Flags().GetString("lang")
 	if langErr != nil {
-		return -1, -1, "", langErr
+		return -1, -1, nil, langErr
 	}
-	if lang != "python" && lang != "go" {
-		return -1, -1, "", errors.New("Unknown language")
+	langResolved, err := runner.ResolveLanguage(lang)
+	if err != nil {
+		return -1, -1, nil, err
 	}
-	return day, year, lang, nil
+	return day, year, langResolved, nil
 }
