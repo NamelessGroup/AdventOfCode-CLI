@@ -1,15 +1,16 @@
 package cli
 
 import (
-	"os"
 	"fmt"
+	"os"
+
 	"github.com/fatih/color"
 )
 
 type Format struct {
 	underline bool
-	bold bool
-	italic bool
+	bold      bool
+	italic    bool
 }
 
 func PrintError(message string) {
@@ -30,7 +31,7 @@ func PrintLogFmt(message string, a ...any) {
 }
 
 func PrintDebug(message string) {
-	Print(message, color.FgCyan, Format{false, false, true}, true)
+	Print(message, color.FgMagenta, Format{false, false, true}, true)
 }
 
 func PrintDebugFmt(message string, a ...any) {
@@ -64,8 +65,8 @@ func Print(message string, col color.Attribute, format Format, breakAtEnd bool) 
 	if format.italic {
 		c.Add(color.Italic)
 	}
-	c.Printf("\r%s", message)
-	if (breakAtEnd) {
+	c.Printf("\r\033[K%s", message)
+	if breakAtEnd {
 		c.Println()
 	}
 }
