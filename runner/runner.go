@@ -1,15 +1,16 @@
 package runner
 
 import (
-	"aoc-cli/runner/languages"
-	"bufio"
+	cli "aoc-cli/output"
 	"fmt"
-	"log"
+
+	"bufio"
 	"os/exec"
 	"strings"
 	"time"
 
 	"github.com/creack/pty"
+	"github.com/fatih/color"
 )
 
 type Language interface {
@@ -27,7 +28,9 @@ type RunResult struct {
 func formatCommand(fullCommand string) (string, []string) {
 	commandList := strings.Split(fullCommand, " ")
 	if len(commandList) <= 0 {
-		return "", []string{} // TODO: Throw error?
+		cli.PrintDebugFmt("Raw command: %s", fullCommand)
+		cli.PrintError("Error trying to format command!")
+		return "", []string{}
 	}
 	if len(commandList) <= 1 {
 		return commandList[0], []string{}
@@ -40,11 +43,13 @@ func runCommand(streamOutput bool, command string, args ...string) RunResult {
 
 	output := []string{}
 
+	cli.PrintDebugFmt("Running command %s with args %s", command, args)
+
 	timeStart := time.Now()
 	ptmx, err := pty.Start(cmd)
 
 	if err != nil {
-		log.Fatalf("cmd.Start() failed!")
+		cli.PrintError("Error starting command!")
 	}
 
 	scanner := bufio.NewScanner(ptmx)
@@ -53,14 +58,14 @@ func runCommand(streamOutput bool, command string, args ...string) RunResult {
 	for scanner.Scan() {
 		m := scanner.Text()
 		if streamOutput {
-			fmt.Println(m)
+			cli.Print(m, color.FgCyan, cli.Format{}, true)
 		}
 		output = append(output, m)
 	}
 
 	err = cmd.Wait()
 	if err != nil {
-		log.Fatalf("cmd.Run() failed!")
+		cli.PrintError("Error awaiting command!")
 	}
 	timeEnd := time.Now()
 	timeTaken := timeEnd.Sub(timeStart)
@@ -68,48 +73,37 @@ func runCommand(streamOutput bool, command string, args ...string) RunResult {
 	return RunResult{stdout: output, exitCode: cmd.ProcessState.ExitCode(), executionDuration: timeTaken}
 }
 
-func resolveLanguage(lang string) Language {
-	if lang == "test" {
-		return languages.Test{}
-	}
-	// TODO: Resolve language string to language object
-	return nil
-}
-
 func prepareTask(day int, task int, lang Language) {
 	rawCommand := lang.GetPreparationCommand(day, task)
 	if rawCommand == "" {
 		return
 	}
-	fmt.Println("Preparing Day", day, "Task", task)
+	cli.PrintLogFmt("Preparing day %d task %d", day, task)
 	command, args := formatCommand(rawCommand)
 	result := runCommand(false, command, args...)
 
 	if result.exitCode == 0 {
-		fmt.Println("Prepared sucessfully")
+		cli.PrintSuccess("Successfully prepared!")
 	} else {
-		fmt.Println("Preparation failed with exit code", result.exitCode)
+		cli.PrintErrorFmt("Preparation failed with exit code %d", result.exitCode)
 	}
 }
 
 func runTask(day int, task int, rawCommand string) {
-	fmt.Println("Running day", day, "Task", task)
+	s := cli.Spinner{}
+	s.Run(fmt.Sprintf("Running day %d task %d", day, task))
 	command, args := formatCommand(rawCommand)
 	result := runCommand(true, command, args...)
-
+	s.Stop()
 	if result.exitCode == 0 {
-		fmt.Println("Task", task, "finished successfully after", result.executionDuration.Truncate(10000))
+		cli.PrintSuccessFmt("Task %d finished successfully after %s", task, result.executionDuration.Truncate(10000))
 	} else {
-		fmt.Println("Task", task, "failed execution after", result.executionDuration.Truncate(100000), " with exit code", result.exitCode)
+		cli.PrintErrorFmt("Task %d failed execution after %s with exit code %d", task, result.executionDuration.Truncate(10000), result.exitCode)
 	}
 }
 
 func SolveDay(day int, task int, lang string) {
-	languageObject := resolveLanguage(lang)
-
-	if languageObject == nil {
-		return // TODO: Error throwing?
-	}
+	languageObject := ResolveLanguage(lang)
 
 	prepareTask(day, task, languageObject)
 	rawRunCommand := languageObject.GetSolveCommand(day, task)
@@ -117,11 +111,7 @@ func SolveDay(day int, task int, lang string) {
 }
 
 func TestDay(day int, task int, lang string) {
-	languageObject := resolveLanguage(lang)
-
-	if languageObject == nil {
-		return // TODO: Error throwing?
-	}
+	languageObject := ResolveLanguage(lang)
 
 	prepareTask(day, task, languageObject)
 	rawRunCommand := languageObject.GetTestCommand(day, task)
