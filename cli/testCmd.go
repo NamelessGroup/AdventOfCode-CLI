@@ -3,6 +3,7 @@ package cli
 import (
 	"fmt"
 	"github.com/spf13/cobra"
+	"aoc-cli/output"
 )
 
 var testCommand = &cobra.Command{
@@ -12,17 +13,17 @@ var testCommand = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		day, year, lang, flagErr := getFlags(cmd)
 		if flagErr != nil {
-			PrintError(flagErr.Error())
+			cli.PrintError(flagErr.Error())
 			return
 		}
 
 		task, taskErr := getTask(args)
 		if taskErr != nil {
-			PrintError(taskErr.Error())
+			cli.PrintError(taskErr.Error())
 			return
 		}
 
-		PrintDebug(fmt.Sprintf("Testing task %d of day %d in year %d using language %s", task, day, year, lang))
+		cli.PrintDebug(fmt.Sprintf("Testing task %d of day %d in year %d using language %s", task, day, year, lang))
 	},
 }
 

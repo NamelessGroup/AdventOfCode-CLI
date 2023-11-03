@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"aoc-cli/output"
 	"github.com/spf13/cobra"
 )
 
@@ -13,7 +14,7 @@ var rootCmd = &cobra.Command{
 	Short: "aoc-cli is a CLI for Advent of Code",
 	Long:  "aoc-cli is a CLI for Advent of Code",
 	Run: func(cmd *cobra.Command, args []string) {
-		PrintWarning("No command specified")
+		cli.PrintWarning("No command specified")
 	},
 }
 
@@ -27,7 +28,7 @@ func addPersistentFlags(cmd *cobra.Command) {
 
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
-		PrintError(err.Error())
+		cli.PrintError(err.Error())
 	}
 }
 
