@@ -26,8 +26,10 @@ var initCommand = &cobra.Command{
 			return
 		}
 		_, err = aocweb.GetResource("dayPage", day, year)
-		cli.PrintError(err.Error())
-		aocweb.GetResource("solveInput", day, year)
+		if err != nil {
+			cli.PrintWarning("Could not access web page")
+			return
+		}
 	},
 }
 

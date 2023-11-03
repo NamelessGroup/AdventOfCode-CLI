@@ -11,7 +11,7 @@ type Resource struct {
 	getter   func(day int, year int) (string, error)
 }
 
-var resources = map[string]Resource{}
+var resources = make(map[string]Resource)
 
 func init() {
 	resources["dayPage"] = Resource{
@@ -35,7 +35,7 @@ func GetResource(name string, day int, year int) (string, error) {
 		return "", fmt.Errorf("Resource %s not registered", name)
 	}
 
-	cli.PrintDebugFmt("Looking for file %d/%d/%s", year, day, name)
+	cli.PrintDebugFmt("Looking for file %d/%d/%s", year, day, resource.fileName)
 	fileContent, err := os.ReadFile(fmt.Sprintf("%d/%d/%s", year, day, resource.fileName))
 	fileContentString := string(fileContent)
 	if err == nil && fileContentString == "" {
@@ -51,12 +51,13 @@ func GetResource(name string, day int, year int) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	
 
 	cli.PrintDebugFmt("Found Resource %s:", name)
 	cli.PrintDebug(resourceContent)
 	cli.PrintDebugFmt("Saving resource %s", name)
 
-	// resource.saveToFile(year, day, resourceContent)
+	resource.saveToFile(year, day, resourceContent)
 	return resourceContent, nil
 }
 

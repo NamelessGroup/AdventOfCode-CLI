@@ -1,18 +1,18 @@
 package aocweb
 
 import (
-	"aoc-cli/output"
+	cli "aoc-cli/output"
 	"bytes"
 	"errors"
 	"fmt"
+
 	"net/http"
 	"regexp"
 )
 
 func get(day int, year int, path string) (string, error) {
 	cli.PrintDebugFmt("Getting %s for day %d year %d from the website", path, day, year)
-	body := []byte{}
-	req, err := http.NewRequest("GET", fmt.Sprintf("https://adventofcode.com/%d/day/%d%s", year, day, path), bytes.NewBuffer(body))
+	req, err := http.NewRequest("GET", fmt.Sprintf("https://adventofcode.com/%d/day/%d%s", year, day, path), nil)
 	if err != nil {
 		return "", err
 	}
@@ -25,7 +25,11 @@ func get(day int, year int, path string) (string, error) {
 	if result.StatusCode != 200 {
 		return "", fmt.Errorf("Got status code %d", result.StatusCode)
 	}
-	result.Body.Close()
+
+	buffer := new(bytes.Buffer)
+	buffer.ReadFrom(result.Body)
+	body := buffer.String() 
+
 	return string(body), nil
 }
 
