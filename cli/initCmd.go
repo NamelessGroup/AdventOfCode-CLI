@@ -1,9 +1,11 @@
 package cli
 
 import (
-	"fmt"
-	"github.com/spf13/cobra"
+	"aoc-cli/aocweb"
 	"aoc-cli/output"
+	"fmt"
+	"os"
+	"github.com/spf13/cobra"
 )
 
 var initCommand = &cobra.Command{
@@ -17,8 +19,15 @@ var initCommand = &cobra.Command{
 			return
 		}
 
-		cli.PrintDebug(fmt.Sprintf("Initializing day %d in year %d using language %s", day, year, lang))
-		
+		cli.PrintDebugFmt("Initializing day %d in year %d using language %s", day, year, lang)
+		err := os.MkdirAll(fmt.Sprintf("%d/%d", year, day), 0755)
+		if err != nil {
+			cli.PrintError(err.Error())
+			return
+		}
+		_, err = aocweb.GetResource("dayPage", day, year)
+		cli.PrintError(err.Error())
+		aocweb.GetResource("solveInput", day, year)
 	},
 }
 
