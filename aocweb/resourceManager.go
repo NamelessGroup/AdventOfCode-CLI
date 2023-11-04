@@ -14,8 +14,8 @@ type Resource struct {
 var resources = make(map[string]Resource)
 
 func init() {
-	resources["dayPage"] = Resource{
-		fileName: "web.html",
+	resources["challenge"] = Resource{
+		fileName: "challenge.md",
 		getter: GetDayPage,
 	}
 	resources["solveInput"] = Resource{

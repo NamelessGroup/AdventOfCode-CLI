@@ -25,8 +25,9 @@ var initCommand = &cobra.Command{
 			cli.PrintError(err.Error())
 			return
 		}
-		_, err = aocweb.GetResource("dayPage", day, year)
+		_, err = aocweb.GetResource("challenge", day, year)
 		if err != nil {
+			cli.PrintDebug(err.Error())
 			cli.PrintWarning("Could not access web page")
 			return
 		}

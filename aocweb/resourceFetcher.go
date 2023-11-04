@@ -3,7 +3,6 @@ package aocweb
 import (
 	cli "aoc-cli/output"
 	"bytes"
-	"errors"
 	"fmt"
 
 	"net/http"
@@ -34,7 +33,52 @@ func get(day int, year int, path string) (string, error) {
 }
 
 func GetDayPage(day int, year int) (string, error) {
-	return get(day, year, "")
+	html, err := get(day, year, "")
+	if err != nil {
+		return "", err
+	}
+	wholeArticle := regexp.MustCompile("(?ms)<article(.*)</article>").FindString(html)
+	wholeArticle = replaceTagRegex(wholeArticle, "</?article>", "")
+
+	wholeArticle = replaceTagRegex(wholeArticle, "<pre><code>", "\n```\n")
+	wholeArticle = replaceTagRegex(wholeArticle, "</code></pre>", "```")
+
+	wholeArticle = replaceTagRegex(wholeArticle, "<code><em>", "**`")
+	wholeArticle = replaceTagRegex(wholeArticle, "</em></code>", "`**")
+
+	wholeArticle = replaceTagRegex(wholeArticle, "<code>", "`")
+	wholeArticle = replaceTagRegex(wholeArticle, "</code>", "`")
+
+	wholeArticle = replaceTagRegex(wholeArticle, "<em>", "**")
+	wholeArticle = replaceTagRegex(wholeArticle, "</em>", "**")
+
+	wholeArticle = replaceTagRegex(wholeArticle, "<p>", "")
+	wholeArticle = replaceTagRegex(wholeArticle, "</p>", "\n")
+
+	wholeArticle = replaceTagRegex(wholeArticle, "<h2>---", "<h2>")
+	wholeArticle = replaceTagRegex(wholeArticle, "<h2>", "#")
+	wholeArticle = replaceTagRegex(wholeArticle, "---</h2>", "</h2>")
+	wholeArticle = replaceTagRegex(wholeArticle, "</h2>", "\n")
+
+	wholeArticle = replaceTagRegex(wholeArticle, "</?ul>", "")
+	wholeArticle = replaceTagRegex(wholeArticle, "<li>", "- ")
+	wholeArticle = replaceTagRegex(wholeArticle, "</li>", "")
+
+	// replace links
+	wholeArticle = regexp.MustCompile("<a href=\"(.*)\">(.*)</a>").ReplaceAllStringFunc(wholeArticle, func(match string) string {
+		link := regexp.MustCompile("<a href=\"([^\"]*)\"[^>]*>").FindStringSubmatch(match)[1]
+		text := regexp.MustCompile("<a[^>]*>(.*)</a>").FindStringSubmatch(match)[1]
+		return fmt.Sprintf("[%s](%s)", text, link)
+	})
+
+	// eliminate all other tags
+	wholeArticle = replaceTagRegex(wholeArticle, "<>", "")
+	return wholeArticle, nil
+}
+
+func replaceTagRegex(text string, tagRegex string, replacement string) string {
+	replacesRegex := regexp.MustCompile(">").ReplaceAllString(tagRegex, "[^>]*>")
+	return regexp.MustCompile(replacesRegex).ReplaceAllString(text, replacement)
 }
 
 func GetSolveInput(day int, year int) (string, error) {
@@ -42,28 +86,10 @@ func GetSolveInput(day int, year int) (string, error) {
 }
 
 func GetTestInput(day int, year int) (string, error) {
-	dayPage, err := GetResource("dayPage", day, year)
+	dayPage, err := GetResource("challenge", day, year)
 	if err != nil {
 		return "", err
 	}
-	openMatch, err := firstInstance(dayPage, "<code")
-	closeMatch, err := firstInstance(dayPage, "</code>")
-	if err != nil {
-		return "", errors.New("Could not find test input")
-	}
-	codeBlock := dayPage[openMatch:closeMatch]
-	testInput, err := firstInstance(codeBlock, ">")
-	if err != nil {
-		return "", errors.New("Could not find test input")
-	}
-	return codeBlock[testInput+1:], nil
+	return regexp.MustCompile("```([^`]*)```").FindStringSubmatch(dayPage)[1], nil	
 }
 
-func firstInstance(text string, regEx string) (int, error) {
-	re := regexp.MustCompile(regEx)
-	matches := re.FindAllStringIndex(text, -1)
-	if len(matches) < 1 {
-		return -1, fmt.Errorf("No match found")
-	}
-	return matches[0][0], nil
-}
