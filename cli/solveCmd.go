@@ -1,10 +1,12 @@
 package cli
 
 import (
-	"fmt"
-	"github.com/spf13/cobra"
 	"aoc-cli/output"
 	"aoc-cli/runner"
+	"fmt"
+
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 var solveCommand = &cobra.Command{
@@ -32,4 +34,7 @@ var solveCommand = &cobra.Command{
 func init() {
 	addCommand(solveCommand)
 	addPersistentFlags(solveCommand)
+
+	solveCommand.Flags().StringP("cookie", "c", viper.GetString("cookie"), "Session cookie to use for web requests")
+	viper.BindPFlag("cookie", solveCommand.Flags().Lookup("cookie"))
 }

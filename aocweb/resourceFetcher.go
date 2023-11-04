@@ -7,6 +7,8 @@ import (
 
 	"net/http"
 	"regexp"
+
+	"github.com/spf13/viper"
 )
 
 func get(day int, year int, path string) (string, error) {
@@ -15,7 +17,7 @@ func get(day int, year int, path string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	// req.Header.Set("Cookie", fmt.Sprintf("session=%s", COOKIE))
+	req.Header.Set("Cookie", fmt.Sprintf("session=%s", viper.GetString("cookie")))
 	result, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return "", err

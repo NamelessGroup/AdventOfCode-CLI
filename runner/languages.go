@@ -2,7 +2,7 @@ package runner
 
 import (
 	"aoc-cli/runner/languages"
-	"errors"
+	"fmt"
 )
 
 func ResolveLanguage(lang string) (Language, error) {
@@ -11,7 +11,7 @@ func ResolveLanguage(lang string) (Language, error) {
 	}
 
 	if languageMap[lang] == nil {
-		return nil, errors.New("Language not found")
+		return nil, fmt.Errorf("Language %s not found", lang)
 	}
 
 	return languageMap[lang], nil

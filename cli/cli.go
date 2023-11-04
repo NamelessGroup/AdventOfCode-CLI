@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 var rootCmd = &cobra.Command{
@@ -26,7 +27,7 @@ var rootCmd = &cobra.Command{
 func addPersistentFlags(cmd *cobra.Command) {
 	currentTime := time.Now()
 
-	cmd.PersistentFlags().StringP("lang", "l", "python", "Language to run")
+	cmd.PersistentFlags().StringP("lang", "l", viper.GetString("lang"), "Language to run")
 	cmd.PersistentFlags().IntP("day", "d", currentTime.Day(), "Day to run")
 	cmd.PersistentFlags().IntP("year", "y", currentTime.Year(), "Year to run")
 	cmd.PersistentFlags().Bool("debug", false, "Enable debug output")
@@ -35,6 +36,21 @@ func addPersistentFlags(cmd *cobra.Command) {
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
 		cli.PrintError(err.Error())
+	}
+}
+
+
+func init() {
+	viper.SetConfigName("aoc-cli-config")
+	viper.AddConfigPath("$HOME/.config/aoc-cli")
+	viper.AddConfigPath(".")
+	viper.SetConfigType("json")
+
+	viper.SetDefault("lang", "test")
+
+	err := viper.ReadInConfig()
+	if err != nil {
+		cli.PrintWarning("Could not read config file")
 	}
 }
 
