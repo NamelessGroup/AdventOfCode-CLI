@@ -86,10 +86,18 @@ func GetSolveInput(day int, year int) (string, error) {
 }
 
 func GetTestInput(day int, year int) (string, error) {
-	dayPage, err := GetResource("challenge", day, year)
+	dayPage, err := GetResource("challenge1", day, year)
 	if err != nil {
 		return "", err
 	}
 	return regexp.MustCompile("```([^`]*)```").FindStringSubmatch(dayPage)[1], nil	
+}
+
+func GetTestOutput(day int, year int, task int) (string, error) {
+	dayPage, err := GetResource(fmt.Sprintf("challenge%d", task), day, year)
+	if err != nil {
+		return "", err
+	}
+	return regexp.MustCompile("**`[^`]*`**").FindStringSubmatch(dayPage)[task], nil
 }
 
