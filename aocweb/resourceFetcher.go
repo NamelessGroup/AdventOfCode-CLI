@@ -16,6 +16,10 @@ func get(day int, year int, path string) (string, error) {
 		return "", err
 	}
 	// req.Header.Set("Cookie", fmt.Sprintf("session=%s", COOKIE))
+	return executeRequest(req)
+}
+
+func executeRequest(req *http.Request) (string, error) {
 	result, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return "", err
@@ -24,13 +28,14 @@ func get(day int, year int, path string) (string, error) {
 	if result.StatusCode != 200 {
 		return "", fmt.Errorf("Got status code %d", result.StatusCode)
 	}
-
+	
 	buffer := new(bytes.Buffer)
 	buffer.ReadFrom(result.Body)
 	body := buffer.String() 
 
 	return string(body), nil
 }
+
 
 func GetDayPage(day int, year int) (string, error) {
 	html, err := get(day, year, "")
