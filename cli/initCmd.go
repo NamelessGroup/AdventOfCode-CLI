@@ -20,18 +20,23 @@ var initCommand = &cobra.Command{
 		}
 
 		cli.PrintDebugFmt("Initializing day %d in year %d using language %s", day, year, lang)
+		p := cli.ProgressBar{}
+		p.Run("Creating directories")
 		err := os.MkdirAll(fmt.Sprintf("%d/%d", year, day), 0755)
 		if err != nil {
+			p.Cancel("Could not create directories")
 			cli.PrintError(err.Error())
 			return
 		}
+		p.Set("Downloading resources", 0.3333)
 		_, err = aocweb.GetResource("challenge", day, year)
 		if err != nil {
 			cli.PrintDebug(err.Error())
 			cli.PrintWarning("Could not access web page")
-			return
 		}
-		// TODO: Create language files
+		p.Set("Initializing language", 0.6666)
+		// TODO: Create language specific files
+		p.Finish(fmt.Sprintf("Day %d in year %d initialized", day, year))
 	},
 }
 

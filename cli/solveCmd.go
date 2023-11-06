@@ -26,7 +26,8 @@ var solveCommand = &cobra.Command{
 		}
 
 		cli.PrintDebug(fmt.Sprintf("Solving task %d of day %d in year %d using language %s", task, day, year, lang))
-		runner.SolveDay(year, day, task, lang)
+		runResult := runner.SolveDay(year, day, task, lang)
+		cli.PrintSuccessFmt("Your soulution: %s", runResult[len(runResult)-1])
 	},
 }
 
