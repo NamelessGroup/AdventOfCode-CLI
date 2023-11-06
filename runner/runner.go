@@ -14,9 +14,9 @@ import (
 )
 
 type Language interface {
-	GetSolveCommand(day int, task int) string
-	GetTestCommand(day int, task int) string
-	GetPreparationCommand(day int, task int) string
+	GetSolveCommand(year int, day int, task int) string
+	GetTestCommand(year int, day int, task int) string
+	GetPreparationCommand(year int, day int, task int) string
 }
 
 type RunResult struct {
@@ -73,8 +73,8 @@ func runCommand(streamOutput bool, command string, args ...string) RunResult {
 	return RunResult{stdout: output, exitCode: cmd.ProcessState.ExitCode(), executionDuration: timeTaken}
 }
 
-func prepareTask(day int, task int, lang Language) {
-	rawCommand := lang.GetPreparationCommand(day, task)
+func prepareTask(year int, day int, task int, lang Language) {
+	rawCommand := lang.GetPreparationCommand(year, day, task)
 	if rawCommand == "" {
 		return
 	}
@@ -89,7 +89,7 @@ func prepareTask(day int, task int, lang Language) {
 	}
 }
 
-func runTask(day int, task int, rawCommand string) {
+func runTask(day int, task int, rawCommand string) []string {
 	s := cli.Spinner{}
 	s.Run(fmt.Sprintf("Running day %d task %d", day, task))
 	command, args := formatCommand(rawCommand)
@@ -100,16 +100,17 @@ func runTask(day int, task int, rawCommand string) {
 	} else {
 		cli.PrintErrorFmt("Task %d failed execution after %s with exit code %d", task, result.executionDuration.Truncate(10000), result.exitCode)
 	}
+	return result.stdout
 }
 
-func SolveDay(day int, task int, languageObject Language) {
-	prepareTask(day, task, languageObject)
-	rawRunCommand := languageObject.GetSolveCommand(day, task)
-	runTask(day, task, rawRunCommand)
+func SolveDay(year int, day int, task int, languageObject Language) []string {
+	prepareTask(year, day, task, languageObject)
+	rawRunCommand := languageObject.GetSolveCommand(year, day, task)
+	return runTask(day, task, rawRunCommand)
 }
 
-func TestDay(day int, task int, languageObject Language) {
-	prepareTask(day, task, languageObject)
-	rawRunCommand := languageObject.GetTestCommand(day, task)
-	runTask(day, task, rawRunCommand)
+func TestDay(year int, day int, task int, languageObject Language) []string {
+	prepareTask(year, day, task, languageObject)
+	rawRunCommand := languageObject.GetTestCommand(year, day, task)
+	return runTask(day, task, rawRunCommand)
 }
