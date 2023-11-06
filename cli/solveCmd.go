@@ -36,7 +36,7 @@ var solveCommand = &cobra.Command{
 			return
 		}
 		if submit {
-			cli.PrintLog("Submitting solution")
+			cli.PrintLog("Submitting solution", false)
 			answer := aocweb.Submit(day, year, task, runResult[len(runResult)-1])
 			if answer != nil {
 				cli.PrintError(answer.Error())
