@@ -2,6 +2,7 @@ package cli
 
 import (
 	"aoc-cli/output"
+	"aoc-cli/aocweb"
 	"aoc-cli/runner"
 	"fmt"
 
@@ -27,7 +28,24 @@ var solveCommand = &cobra.Command{
 		}
 
 		cli.PrintDebug(fmt.Sprintf("Solving task %d of day %d in year %d using language %s", task, day, year, lang))
-		runner.SolveDay(day, task, lang)
+		runResult := runner.SolveDay(year, day, task, lang)
+		cli.PrintSuccessFmt("Your soulution: %s", runResult[len(runResult)-1])
+
+		submit, err := cmd.Flags().GetBool("submit")
+		if err != nil {
+			cli.PrintDebug(err.Error())
+			return
+		}
+		if submit {
+			cli.PrintLog("Submitting solution", false)
+			answer := aocweb.Submit(day, year, task, runResult[len(runResult)-1])
+			if answer != nil {
+				cli.PrintError(answer.Error())
+			} else {
+				cli.PrintSuccess("Your solution is correct!")
+				cli.PrintSuccessFmt("Solved task %d of day %d of %d!", task, day, year)
+			}
+		}
 	},
 }
 
@@ -37,4 +55,5 @@ func init() {
 
 	solveCommand.Flags().StringP("cookie", "c", viper.GetString("cookie"), "Session cookie to use for web requests")
 	viper.BindPFlag("cookie", solveCommand.Flags().Lookup("cookie"))
+	solveCommand.Flags().BoolP("submit", "s", false, "Submit the solution to the server")
 }

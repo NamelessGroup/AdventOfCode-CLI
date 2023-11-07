@@ -14,8 +14,12 @@ type Resource struct {
 var resources = make(map[string]Resource)
 
 func init() {
-	resources["challenge"] = Resource{
-		fileName: "challenge.md",
+	resources["challenge1"] = Resource{
+		fileName: "challenge1.md",
+		getter: GetDayPage,
+	}
+	resources["challenge2"] = Resource{
+		fileName: "challenge2.md",
 		getter: GetDayPage,
 	}
 	resources["solveInput"] = Resource{
@@ -25,6 +29,18 @@ func init() {
 	resources["testInput"] = Resource{
 		fileName: "test.in",
 		getter: GetTestInput,
+	}
+	resources["testOutput1.out"] = Resource{
+		fileName: "testOne.out",
+		getter: (func(day int, year int) (string, error) {
+			return GetTestOutput(day, year, 1)
+		}),
+	}
+	resources["testOutput2.out"] = Resource{
+		fileName: "testTwo.out",
+		getter: (func(day int, year int) (string, error) {
+			return GetTestOutput(day, year, 2)
+		}),
 	}
 }
 

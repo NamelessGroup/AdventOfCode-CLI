@@ -1,10 +1,12 @@
 package cli
 
 import (
-	"fmt"
-	"github.com/spf13/cobra"
-	"aoc-cli/output"
+	"aoc-cli/aocweb"
+	cli "aoc-cli/output"
 	"aoc-cli/runner"
+	"fmt"
+
+	"github.com/spf13/cobra"
 )
 
 var testCommand = &cobra.Command{
@@ -25,7 +27,20 @@ var testCommand = &cobra.Command{
 		}
 
 		cli.PrintDebug(fmt.Sprintf("Testing task %d of day %d in year %d using language %s", task, day, year, lang))
-		runner.TestDay(day, task, lang)
+		runResult := runner.TestDay(year, day, task, lang)
+		expectedResult, err := aocweb.GetResource(fmt.Sprintf("testOutput%d", task), year, day)
+		if err != nil {
+			cli.PrintWarning("Could not get solution for example data.")
+			cli.PrintDebug(err.Error())
+			cli.PrintSuccessFmt("Your soulution: %s", runResult[len(runResult)-1])
+		}
+		if runResult[len(runResult)-1] == expectedResult {
+			cli.PrintSuccess("Your solution is correct!")
+			cli.PrintDebug(fmt.Sprintf("Expected: %s", expectedResult))
+			cli.PrintDebug(fmt.Sprintf("Got: %s", runResult[len(runResult)-1]))
+		} else {
+			cli.PrintErrorFmt("Your solution does not match the expected result.\n Expected: %s\n Got: %s", expectedResult, runResult[len(runResult)-1])
+		}
 	},
 }
 

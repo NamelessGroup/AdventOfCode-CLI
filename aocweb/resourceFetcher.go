@@ -17,7 +17,16 @@ func get(day int, year int, path string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	req.Header.Set("Cookie", fmt.Sprintf("session=%s", viper.GetString("cookie")))
+
+	return executeRequest(req)
+}
+
+func executeRequest(req *http.Request) (string, error) {
+	cokkie := viper.GetString("cookie")
+	if cokkie == "" {
+		return "", fmt.Errorf("No cookie set. Please set the cookie using the --cookie flag or the config file")
+	}
+	req.Header.Set("Cookie", fmt.Sprintf("session=%s", cokkie))
 	result, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return "", err
@@ -26,13 +35,14 @@ func get(day int, year int, path string) (string, error) {
 	if result.StatusCode != 200 {
 		return "", fmt.Errorf("Got status code %d", result.StatusCode)
 	}
-
+	
 	buffer := new(bytes.Buffer)
 	buffer.ReadFrom(result.Body)
 	body := buffer.String() 
 
 	return string(body), nil
 }
+
 
 func GetDayPage(day int, year int) (string, error) {
 	html, err := get(day, year, "")
@@ -88,10 +98,18 @@ func GetSolveInput(day int, year int) (string, error) {
 }
 
 func GetTestInput(day int, year int) (string, error) {
-	dayPage, err := GetResource("challenge", day, year)
+	dayPage, err := GetResource("challenge1", day, year)
 	if err != nil {
 		return "", err
 	}
 	return regexp.MustCompile("```([^`]*)```").FindStringSubmatch(dayPage)[1], nil	
+}
+
+func GetTestOutput(day int, year int, task int) (string, error) {
+	dayPage, err := GetResource(fmt.Sprintf("challenge%d", task), day, year)
+	if err != nil {
+		return "", err
+	}
+	return regexp.MustCompile("**`[^`]*`**").FindStringSubmatch(dayPage)[task], nil
 }
 
