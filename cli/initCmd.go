@@ -2,9 +2,11 @@ package cli
 
 import (
 	"aoc-cli/aocweb"
-	"aoc-cli/output"
+	cli "aoc-cli/output"
+	"aoc-cli/utils"
 	"fmt"
 	"os"
+
 	"github.com/spf13/cobra"
 )
 
@@ -22,20 +24,26 @@ var initCommand = &cobra.Command{
 		cli.PrintDebugFmt("Initializing day %d in year %d using language %s", day, year, lang)
 		p := cli.ProgressBar{}
 		p.Run("Creating directories")
-		err := os.MkdirAll(fmt.Sprintf("%d/%d", year, day), 0755)
+		dir := utils.GetChallengeDirectory(year, day)
+		err := os.MkdirAll(dir, 0755)
 		if err != nil {
 			p.Cancel("Could not create directories")
 			cli.PrintError(err.Error())
 			return
 		}
 		p.Set("Downloading resources", 0.3333)
-		_, err = aocweb.GetResource("challenge", day, year)
+		_, err = aocweb.GetResource("challenge1", day, year)
 		if err != nil {
 			cli.PrintDebug(err.Error())
 			cli.PrintWarning("Could not access web page")
 		}
 		p.Set("Initializing language", 0.6666)
-		// TODO: Create language specific files
+
+		filesToWrite := lang.GetFilesToWrite()
+		for _, file := range filesToWrite {
+			os.WriteFile(fmt.Sprintf("%s/%s", dir, file.Filename), []byte(file.Content), 0644)
+		}
+
 		p.Finish(fmt.Sprintf("Day %d in year %d initialized", day, year))
 	},
 }

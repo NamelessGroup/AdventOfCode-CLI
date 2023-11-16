@@ -39,7 +39,6 @@ func Execute() {
 	}
 }
 
-
 func init() {
 	viper.SetConfigName("aoc-cli-config")
 	viper.AddConfigPath("$HOME/.config/aoc-cli")

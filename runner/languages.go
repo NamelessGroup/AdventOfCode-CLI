@@ -7,7 +7,8 @@ import (
 
 func ResolveLanguage(lang string) (Language, error) {
 	languageMap := map[string]Language{
-		"test": languages.Test{},
+		"test":   languages.Test{},
+		"python": languages.Python{},
 	}
 
 	if languageMap[lang] == nil {

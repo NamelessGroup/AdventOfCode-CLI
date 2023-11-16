@@ -1,9 +1,10 @@
 package aocweb
 
 import (
+	cli "aoc-cli/output"
+	"aoc-cli/utils"
 	"fmt"
 	"os"
-	"aoc-cli/output"
 )
 
 type Resource struct {
@@ -16,19 +17,19 @@ var resources = make(map[string]Resource)
 func init() {
 	resources["challenge1"] = Resource{
 		fileName: "challenge1.md",
-		getter: GetDayPage,
+		getter:   GetDayPage,
 	}
 	resources["challenge2"] = Resource{
 		fileName: "challenge2.md",
-		getter: GetDayPage,
+		getter:   GetDayPage,
 	}
 	resources["solveInput"] = Resource{
 		fileName: "solve.in",
-		getter: GetSolveInput,
+		getter:   GetSolveInput,
 	}
 	resources["testInput"] = Resource{
 		fileName: "test.in",
-		getter: GetTestInput,
+		getter:   GetTestInput,
 	}
 	resources["testOutput1.out"] = Resource{
 		fileName: "testOne.out",
@@ -52,11 +53,12 @@ func GetResource(name string, day int, year int) (string, error) {
 	}
 
 	cli.PrintDebugFmt("Looking for file %d/%d/%s", year, day, resource.fileName)
-	fileContent, err := os.ReadFile(fmt.Sprintf("%d/%d/%s", year, day, resource.fileName))
+	dir := utils.GetChallengeDirectory(year, day)
+	fileContent, err := os.ReadFile(fmt.Sprintf("%s/%s", dir, resource.fileName))
 	fileContentString := string(fileContent)
 	if err == nil && fileContentString == "" {
 		cli.PrintWarningFmt("Local file of resource %s found, but was empty", fmt.Sprintf("%d/%d/%s", year, day, resource.fileName))
-	} 
+	}
 	if err == nil && fileContentString != "" {
 		cli.PrintDebugFmt("Local file of resource %s found", name)
 		cli.PrintDebug(fileContentString)
@@ -67,7 +69,6 @@ func GetResource(name string, day int, year int) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	
 
 	cli.PrintDebugFmt("Found Resource %s:", name)
 	cli.PrintDebug(resourceContent)
@@ -78,7 +79,8 @@ func GetResource(name string, day int, year int) (string, error) {
 }
 
 func (resource Resource) saveToFile(year int, day int, content string) {
-	err := os.WriteFile(fmt.Sprintf("%d/%d/%s", year, day, resource.fileName), []byte(content), 0644)
+	dir := utils.GetChallengeDirectory(year, day)
+	err := os.WriteFile(fmt.Sprintf("%s/%s", dir, resource.fileName), []byte(content), 0644)
 	if err != nil {
 		cli.PrintDebug("Could not save resource to file:")
 		cli.PrintDebug(err.Error())

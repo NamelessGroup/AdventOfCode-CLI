@@ -2,6 +2,7 @@ package runner
 
 import (
 	cli "aoc-cli/output"
+	utils "aoc-cli/utils"
 	"fmt"
 
 	"bufio"
@@ -14,9 +15,10 @@ import (
 )
 
 type Language interface {
-	GetSolveCommand(year int, day int, task int) string
-	GetTestCommand(year int, day int, task int) string
-	GetPreparationCommand(year int, day int, task int) string
+	GetSolveCommand(directoryPath string, task int) string
+	GetTestCommand(directoryPath string, task int) string
+	GetPreparationCommand(directoryPath string, task int) []string
+	GetFilesToWrite() []utils.FileTemplate
 }
 
 type RunResult struct {
@@ -63,10 +65,7 @@ func runCommand(streamOutput bool, command string, args ...string) RunResult {
 		output = append(output, m)
 	}
 
-	err = cmd.Wait()
-	if err != nil {
-		cli.PrintError("Error awaiting command!")
-	}
+	cmd.Wait()
 	timeEnd := time.Now()
 	timeTaken := timeEnd.Sub(timeStart)
 
@@ -74,18 +73,28 @@ func runCommand(streamOutput bool, command string, args ...string) RunResult {
 }
 
 func prepareTask(year int, day int, task int, lang Language) {
-	rawCommand := lang.GetPreparationCommand(year, day, task)
-	if rawCommand == "" {
+	executionDirectory := utils.GetChallengeDirectory(year, day)
+	rawCommand := lang.GetPreparationCommand(executionDirectory, task)
+	if len(rawCommand) == 0 {
 		return
 	}
 	cli.PrintLogFmt("Preparing day %d task %d", day, task)
-	command, args := formatCommand(rawCommand)
-	result := runCommand(false, command, args...)
 
-	if result.exitCode == 0 {
+	preparedSuccessfully := true
+
+	for _, element := range rawCommand {
+		command, args := formatCommand(element)
+		result := runCommand(false, command, args...)
+
+		if result.exitCode != 0 {
+			cli.PrintErrorFmt("Preparation failed with exit code %d", result.exitCode)
+			preparedSuccessfully = false
+			break
+		}
+	}
+
+	if preparedSuccessfully {
 		cli.PrintSuccess("Successfully prepared!")
-	} else {
-		cli.PrintErrorFmt("Preparation failed with exit code %d", result.exitCode)
 	}
 }
 
@@ -105,12 +114,14 @@ func runTask(day int, task int, rawCommand string) []string {
 
 func SolveDay(year int, day int, task int, languageObject Language) []string {
 	prepareTask(year, day, task, languageObject)
-	rawRunCommand := languageObject.GetSolveCommand(year, day, task)
+	executionDirectory := utils.GetChallengeDirectory(year, day)
+	rawRunCommand := languageObject.GetSolveCommand(executionDirectory, task)
 	return runTask(day, task, rawRunCommand)
 }
 
 func TestDay(year int, day int, task int, languageObject Language) []string {
 	prepareTask(year, day, task, languageObject)
-	rawRunCommand := languageObject.GetTestCommand(year, day, task)
+	executionDirectory := utils.GetChallengeDirectory(year, day)
+	rawRunCommand := languageObject.GetTestCommand(executionDirectory, task)
 	return runTask(day, task, rawRunCommand)
 }
