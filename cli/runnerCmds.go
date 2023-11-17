@@ -1,7 +1,7 @@
 package cli
 
 import (
-	"errors"
+	"aoc-cli/utils"
 	"strconv"
 )
 
@@ -16,7 +16,7 @@ func getTask(args []string) (int, error) {
 	}
 
 	if task != 1 && task != 2 {
-		return 0, errors.New("Task must be 1 or 2")
+		return 0, utils.AOCCLIError("Task must be 1 or 2").DebugInfof("runnerCmds", "Supplied task: %d", task)
 	}
 	return task, nil
 }

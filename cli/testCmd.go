@@ -16,13 +16,13 @@ var testCommand = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		day, year, lang, flagErr := getFlags(cmd)
 		if flagErr != nil {
-			cli.PrintError(flagErr.Error())
+			cli.PrintError(flagErr)
 			return
 		}
 
 		task, taskErr := getTask(args)
 		if taskErr != nil {
-			cli.PrintError(taskErr.Error())
+			cli.PrintError(taskErr)
 			return
 		}
 
@@ -31,7 +31,7 @@ var testCommand = &cobra.Command{
 		expectedResult, err := aocweb.GetResource(fmt.Sprintf("testOutput%d", task), year, day)
 		if err != nil {
 			cli.PrintWarning("Could not get solution for example data.")
-			cli.PrintDebug(err.Error())
+			cli.PrintDebugError(err)
 			cli.PrintSuccessFmt("Your soulution: %s", runResult[len(runResult)-1])
 		} else if runResult[len(runResult)-1] == expectedResult {
 			cli.PrintSuccess("Your solution is correct!")

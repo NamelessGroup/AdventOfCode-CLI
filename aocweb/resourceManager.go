@@ -49,7 +49,7 @@ func GetResource(name string, day int, year int) (string, error) {
 	cli.PrintDebugFmt("Getting resource %s for day %d year %d", name, day, year)
 	resource, foundResource := resources[name]
 	if !foundResource {
-		return "", fmt.Errorf("Resource %s not registered", name)
+		return "", utils.AOCCLIErrorf("Resource %s not registered", name)
 	}
 
 	cli.PrintDebugFmt("Looking for file %d/%d/%s", year, day, resource.fileName)
@@ -83,6 +83,6 @@ func (resource Resource) saveToFile(year int, day int, content string) {
 	err := os.WriteFile(fmt.Sprintf("%s/%s", dir, resource.fileName), []byte(content), 0644)
 	if err != nil {
 		cli.PrintDebug("Could not save resource to file:")
-		cli.PrintDebug(err.Error())
+		cli.PrintDebugError(err)
 	}
 }

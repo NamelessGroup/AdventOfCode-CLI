@@ -15,7 +15,7 @@ var configCommand = &cobra.Command{
 		viper.Set(args[0], args[1])
 		err := viper.WriteConfig()
 		if err != nil {
-			cli.PrintError(err.Error())
+			cli.PrintError(err)
 			return
 		}
 	},

@@ -1,8 +1,8 @@
 package cli
 
 import (
-	"aoc-cli/output"
 	"aoc-cli/aocweb"
+	cli "aoc-cli/output"
 	"aoc-cli/runner"
 	"fmt"
 
@@ -17,13 +17,13 @@ var solveCommand = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		day, year, lang, flagErr := getFlags(cmd)
 		if flagErr != nil {
-			cli.PrintError(flagErr.Error())
+			cli.PrintError(flagErr)
 			return
 		}
 
 		task, taskErr := getTask(args)
 		if taskErr != nil {
-			cli.PrintError(taskErr.Error())
+			cli.PrintError(taskErr)
 			return
 		}
 
@@ -33,14 +33,14 @@ var solveCommand = &cobra.Command{
 
 		submit, err := cmd.Flags().GetBool("submit")
 		if err != nil {
-			cli.PrintDebug(err.Error())
+			cli.PrintDebugError(err)
 			return
 		}
 		if submit {
 			cli.PrintLog("Submitting solution", false)
 			answer := aocweb.Submit(day, year, task, runResult[len(runResult)-1])
 			if answer != nil {
-				cli.PrintError(answer.Error())
+				cli.PrintError(answer)
 			} else {
 				cli.PrintSuccess("Your solution is correct!")
 				cli.PrintSuccessFmt("Solved task %d of day %d of %d!", task, day, year)

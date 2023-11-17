@@ -17,7 +17,7 @@ var initCommand = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		day, year, lang, flagErr := getFlags(cmd)
 		if flagErr != nil {
-			cli.PrintError(flagErr.Error())
+			cli.PrintError(flagErr)
 			return
 		}
 
@@ -28,7 +28,7 @@ var initCommand = &cobra.Command{
 		err := os.MkdirAll(dir, 0755)
 		if err != nil {
 			p.Cancel("Could not create directories")
-			cli.PrintError(err.Error())
+			cli.PrintError(err)
 			return
 		}
 		p.Set("Downloading resources", 0.1666)
@@ -39,7 +39,7 @@ var initCommand = &cobra.Command{
 			_, err = aocweb.GetResource(resource, day, year)
 			if err != nil {
 				cli.PrintDebugFmt("Error requesting %s", resource)
-				cli.PrintDebug(err.Error())
+				cli.PrintDebugError(err)
 				if !warningSent {
 					cli.PrintWarning("Could not access web page")
 					warningSent = true

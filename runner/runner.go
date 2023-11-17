@@ -31,7 +31,7 @@ func formatCommand(fullCommand string) (string, []string) {
 	commandList := strings.Split(fullCommand, " ")
 	if len(commandList) <= 0 {
 		cli.PrintDebugFmt("Raw command: %s", fullCommand)
-		cli.PrintError("Error trying to format command!")
+		cli.PrintErrorString("Error trying to format command!")
 		return "", []string{}
 	}
 	if len(commandList) <= 1 {
@@ -51,7 +51,7 @@ func runCommand(streamOutput bool, command string, args ...string) RunResult {
 	ptmx, err := pty.Start(cmd)
 
 	if err != nil {
-		cli.PrintError("Error starting command!")
+		cli.PrintErrorString("Error starting command!")
 	}
 
 	scanner := bufio.NewScanner(ptmx)

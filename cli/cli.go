@@ -3,8 +3,7 @@ package cli
 import (
 	cli "aoc-cli/output"
 	"aoc-cli/runner"
-	"errors"
-	"fmt"
+	"aoc-cli/utils"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -35,7 +34,7 @@ func addPersistentFlags(cmd *cobra.Command) {
 
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
-		cli.PrintError(err.Error())
+		cli.PrintError(err)
 	}
 }
 
@@ -72,13 +71,13 @@ func getFlags(cmd *cobra.Command) (int, int, runner.Language, error) {
 
 	currentTime := time.Now()
 	if year == currentTime.Year() && day > currentTime.Day() {
-		return -1, -1, nil, errors.New("Day must be before tomorrow")
+		return -1, -1, nil, utils.AOCCLIError("Day must be before tomorrow").DebugInfof("cli", "Inputted day: %d", day)
 	}
 	if year < 2015 || year > currentTime.Year() {
-		return -1, -1, nil, fmt.Errorf("Year must be between 2015 and %d", currentTime.Year())
+		return -1, -1, nil, utils.AOCCLIErrorf("Year must be between 2015 and %d", currentTime.Year()).DebugInfof("cli", "Inputted year: %d", year)
 	}
 	if day < 1 || day > 25 {
-		return -1, -1, nil, errors.New("Day must be between 1 and 25")
+		return -1, -1, nil, utils.AOCCLIError("Day must be between 1 and 25").DebugInfof("cli", "Inputted day: %d", day)
 	}
 
 	lang, langErr := cmd.Flags().GetString("lang")

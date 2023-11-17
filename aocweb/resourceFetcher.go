@@ -2,6 +2,7 @@ package aocweb
 
 import (
 	cli "aoc-cli/output"
+	"aoc-cli/utils"
 	"bytes"
 	"fmt"
 
@@ -22,18 +23,18 @@ func get(day int, year int, path string) (string, error) {
 }
 
 func executeRequest(req *http.Request) (string, error) {
-	cokkie := viper.GetString("cookie")
-	if cokkie == "" {
-		return "", fmt.Errorf("No cookie set. Please set the cookie using the --cookie flag or the config file")
+	cookie := viper.GetString("cookie")
+	if cookie == "" {
+		return "", utils.AOCCLIError("No cookie set. Please set the cookie using the --cookie flag or the config file")
 	}
-	req.Header.Set("Cookie", fmt.Sprintf("session=%s", cokkie))
+	req.Header.Set("Cookie", fmt.Sprintf("session=%s", cookie))
 	result, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return "", err
 	}
 	cli.PrintDebugFmt("Got status code %d", result.StatusCode)
 	if result.StatusCode != 200 {
-		return "", fmt.Errorf("Got status code %d", result.StatusCode)
+		return "", utils.AOCCLIErrorf("Got status code %d", result.StatusCode)
 	}
 
 	buffer := new(bytes.Buffer)
@@ -112,7 +113,7 @@ func GetTestOutput(day int, year int, task int) (string, error) {
 
 	matches := regexp.MustCompile("[*][*]`[^`]*`[*][*]").FindStringSubmatch(dayPage)
 	if matches == nil {
-		return "", fmt.Errorf("no test output found")
+		return "", utils.AOCCLIError("No test output found")
 	}
 	rawMatch := matches[len(matches)-1]
 	return rawMatch[3 : len(rawMatch)-3], nil

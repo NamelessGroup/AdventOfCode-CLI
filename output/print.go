@@ -1,6 +1,8 @@
 package cli
 
 import (
+	"aoc-cli/utils"
+	"errors"
 	"fmt"
 	"os"
 
@@ -15,13 +17,21 @@ type Format struct {
 
 var PrintDebugMessages = false
 
-func PrintError(message string) {
+func PrintErrorString(message string) {
 	Print(message, color.FgRed, Format{false, false, false}, true)
 	os.Exit(1)
 }
 
 func PrintErrorFmt(message string, a ...any) {
-	PrintError(fmt.Sprintf(message, a...))
+	PrintErrorString(fmt.Sprintf(message, a...))
+}
+
+func PrintError(err error) {
+	var aocCliError *utils.AOC_CLIError
+	if errors.As(err, &aocCliError) {
+		PrintDebug(aocCliError.DebugError())
+	}
+	PrintErrorString(err.Error())
 }
 
 func PrintLog(message string, breakAtEnd bool) {
@@ -36,6 +46,14 @@ func PrintDebug(message string) {
 	if PrintDebugMessages {
 		Print(message, color.FgMagenta, Format{false, false, true}, true)
 	}
+}
+
+func PrintDebugError(err error) {
+	var aocCliError *utils.AOC_CLIError
+	if errors.As(err, &aocCliError) {
+		PrintDebug(aocCliError.DebugError())
+	}
+	PrintDebug(err.Error())
 }
 
 func PrintDebugFmt(message string, a ...any) {

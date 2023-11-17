@@ -2,8 +2,8 @@ package aocweb
 
 import (
 	cli "aoc-cli/output"
+	"aoc-cli/utils"
 	"bytes"
-	"errors"
 	"fmt"
 	"regexp"
 
@@ -23,7 +23,7 @@ func postAnswer(day int, year int, task int, solution string) (string, error) {
 
 	cookie := viper.GetString("cookie")
 	if cookie == "" {
-		return "", fmt.Errorf("No cookie set. Please set the cookie using the --cookie flag or the config file")
+		return "", utils.AOCCLIError("No cookie set. Please set the cookie using the --cookie flag or the config file")
 	}
 
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
@@ -35,8 +35,7 @@ func postAnswer(day int, year int, task int, solution string) (string, error) {
 func Submit(day int, year int, task int, solution string) error {
 	result, err := postAnswer(day, year, task, solution)
 	if err != nil {
-		cli.PrintDebug(err.Error())
-		return errors.New("Error submitting answer!")
+		return utils.AOCCLIError("Error submitting answer!").DebugInfo("submitter", err.Error())
 	}
 
 	wholeArticle := regexp.MustCompile("(?ms)<article(.*)</article>").FindString(result)
@@ -47,10 +46,10 @@ func Submit(day int, year int, task int, solution string) error {
 		return nil
 	}
 	if (regexp.MustCompile("You don't seem to be solving the right level")).MatchString(wholeArticle) {
-		return fmt.Errorf("Already solved task %d for day %d of %d", task, day, year)
+		return utils.AOCCLIErrorf("Already solved task %d for day %d of %d", task, day, year)
 	}
 	if (regexp.MustCompile("That's not the right answer")).MatchString(wholeArticle) {
-		return fmt.Errorf("Wrong answer submitted.\nYour answer: %s", solution)
+		return utils.AOCCLIErrorf("Wrong answer submitted.\nYour answer: %s", solution)
 	}
 	if (regexp.MustCompile("You gave an answer too recently")).MatchString(wholeArticle) {
 		timeToWait := regexp.MustCompile("You have (.*) left to wait").FindStringSubmatch(wholeArticle)
@@ -63,7 +62,7 @@ func Submit(day int, year int, task int, solution string) error {
 		} else {
 			formattedTimeToWait = timeToWait[1]
 		}
-		return fmt.Errorf("You gave an answer too recently. You have to wait for %s to submit again", formattedTimeToWait)
+		return utils.AOCCLIErrorf("You gave an answer too recently. You have to wait for %s to submit again", formattedTimeToWait)
 	}
-	return fmt.Errorf("Unknown error submitting answer: %s", replaceTagRegex(wholeArticle, "<>", ""))
+	return utils.AOCCLIErrorf("Unknown error submitting answer: %s", replaceTagRegex(wholeArticle, "<>", ""))
 }
