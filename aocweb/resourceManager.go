@@ -31,13 +31,13 @@ func init() {
 		fileName: "test.in",
 		getter:   GetTestInput,
 	}
-	resources["testOutput1.out"] = Resource{
+	resources["testOutput1"] = Resource{
 		fileName: "testOne.out",
 		getter: (func(day int, year int) (string, error) {
 			return GetTestOutput(day, year, 1)
 		}),
 	}
-	resources["testOutput2.out"] = Resource{
+	resources["testOutput2"] = Resource{
 		fileName: "testTwo.out",
 		getter: (func(day int, year int) (string, error) {
 			return GetTestOutput(day, year, 2)

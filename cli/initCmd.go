@@ -31,13 +31,24 @@ var initCommand = &cobra.Command{
 			cli.PrintError(err.Error())
 			return
 		}
-		p.Set("Downloading resources", 0.3333)
-		_, err = aocweb.GetResource("challenge1", day, year)
-		if err != nil {
-			cli.PrintDebug(err.Error())
-			cli.PrintWarning("Could not access web page")
+		p.Set("Downloading resources", 0.1666)
+
+		warningSent := false
+
+		for idx, resource := range []string{"challenge1", "solveInput", "testInput", "testOutput1"} {
+			_, err = aocweb.GetResource(resource, day, year)
+			if err != nil {
+				cli.PrintDebugFmt("Error requesting %s", resource)
+				cli.PrintDebug(err.Error())
+				if !warningSent {
+					cli.PrintWarning("Could not access web page")
+					warningSent = true
+				}
+			}
+			p.Set("Downloading resources", (2.0+float64(idx))/6.0)
 		}
-		p.Set("Initializing language", 0.6666)
+
+		p.Set("Initializing language", 0.8333)
 
 		filesToWrite := lang.GetFilesToWrite()
 		for _, file := range filesToWrite {

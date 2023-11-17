@@ -13,23 +13,15 @@ def parse_input(input_file_path):
 
 if __name__ == "__main__":
     if len(sys.argv) <= 2 or sys.argv[2] == "main":
-        input_file = os.path.dirname(__file__) + "/input"
+        input_file = os.path.dirname(__file__) + "/input.in"
     elif sys.argv[2] == "test":
-        input_file = os.path.dirname(__file__) + "/test"
+        input_file = os.path.dirname(__file__) + "/test.in"
         if not os.path.exists(input_file):
             print("Test file doesn't exist!")
             exit(1)
     lines = parse_input(input_file)
 
     if len(sys.argv) <= 1 or sys.argv[1] == "1":
-        try:
-            task1(lines)
-        except Exception as e:
-            print(e)
-            exit(1)
+        task1(lines)
     if len(sys.argv) <= 1 or sys.argv[1] == "2":
-        try:
-            task2(lines)
-        except Exception as e:
-            print(e)
-            exit(1)
+        task2(lines)

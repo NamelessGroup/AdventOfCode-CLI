@@ -35,14 +35,13 @@ func executeRequest(req *http.Request) (string, error) {
 	if result.StatusCode != 200 {
 		return "", fmt.Errorf("Got status code %d", result.StatusCode)
 	}
-	
+
 	buffer := new(bytes.Buffer)
 	buffer.ReadFrom(result.Body)
-	body := buffer.String() 
+	body := buffer.String()
 
 	return string(body), nil
 }
-
 
 func GetDayPage(day int, year int) (string, error) {
 	html, err := get(day, year, "")
@@ -102,7 +101,7 @@ func GetTestInput(day int, year int) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return regexp.MustCompile("```([^`]*)```").FindStringSubmatch(dayPage)[1], nil	
+	return regexp.MustCompile("```([^`]*)```").FindStringSubmatch(dayPage)[1], nil
 }
 
 func GetTestOutput(day int, year int, task int) (string, error) {
@@ -110,6 +109,11 @@ func GetTestOutput(day int, year int, task int) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return regexp.MustCompile("**`[^`]*`**").FindStringSubmatch(dayPage)[task], nil
-}
 
+	matches := regexp.MustCompile("[*][*]`[^`]*`[*][*]").FindStringSubmatch(dayPage)
+	if matches == nil {
+		return "", fmt.Errorf("no test output found")
+	}
+	rawMatch := matches[len(matches)-1]
+	return rawMatch[3 : len(rawMatch)-3], nil
+}

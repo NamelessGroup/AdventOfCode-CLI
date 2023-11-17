@@ -33,8 +33,7 @@ var testCommand = &cobra.Command{
 			cli.PrintWarning("Could not get solution for example data.")
 			cli.PrintDebug(err.Error())
 			cli.PrintSuccessFmt("Your soulution: %s", runResult[len(runResult)-1])
-		}
-		if runResult[len(runResult)-1] == expectedResult {
+		} else if runResult[len(runResult)-1] == expectedResult {
 			cli.PrintSuccess("Your solution is correct!")
 			cli.PrintDebug(fmt.Sprintf("Expected: %s", expectedResult))
 			cli.PrintDebug(fmt.Sprintf("Got: %s", runResult[len(runResult)-1]))
