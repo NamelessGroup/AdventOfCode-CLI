@@ -4,6 +4,7 @@ import (
 	"aoc-cli/aocweb"
 	cli "aoc-cli/output"
 	"aoc-cli/utils"
+	"errors"
 	"fmt"
 	"os"
 
@@ -52,7 +53,11 @@ var initCommand = &cobra.Command{
 
 		filesToWrite := lang.GetFilesToWrite()
 		for _, file := range filesToWrite {
-			os.WriteFile(fmt.Sprintf("%s/%s", dir, file.Filename), []byte(file.Content), 0644)
+			fullPath := fmt.Sprintf("%s%s", dir, file.Filename)
+			if _, err := os.Stat(fullPath); errors.Is(err, os.ErrNotExist) {
+				cli.PrintDebugFmt("%s doesnt exist, writing template", fullPath)
+				os.WriteFile(fullPath, []byte(file.Content), 0644)
+			}
 		}
 
 		p.Finish(fmt.Sprintf("Day %d in year %d initialized", day, year))
