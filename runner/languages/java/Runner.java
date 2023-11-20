@@ -12,7 +12,7 @@ public class Runner {
         }
 
         // Load input file
-        File file = new File(args[1] + (args.length >= 3 && args[1].equals("test") ? "test" : "input"));
+        File file = new File(args[1] + (args.length >= 3 && args[1].equals("test") ? "test.in" : "solve.in"));
         if (!file.exists()) {
             System.out.println("File not found");
             return;

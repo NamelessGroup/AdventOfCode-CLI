@@ -2,7 +2,7 @@ import os
 from task import task1, task2
 import sys
 
-def parse_input(input_file_path):
+def parse_input(input_file_path: str) -> list(str):
     file = open(input_file_path)
     raw_lines = file.readlines()
     file.close()

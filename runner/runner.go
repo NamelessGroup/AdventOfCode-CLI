@@ -7,19 +7,11 @@ import (
 
 	"bufio"
 	"os/exec"
-	"strings"
 	"time"
 
 	"github.com/creack/pty"
 	"github.com/fatih/color"
 )
-
-type Language interface {
-	GetSolveCommand(directoryPath string, task int) string
-	GetTestCommand(directoryPath string, task int) string
-	GetPreparationCommand(directoryPath string, task int) []string
-	GetFilesToWrite() []utils.FileTemplate
-}
 
 type RunResult struct {
 	stdout            []string
@@ -27,25 +19,17 @@ type RunResult struct {
 	executionDuration time.Duration
 }
 
-func formatCommand(fullCommand string) (string, []string) {
-	commandList := strings.Split(fullCommand, " ")
-	if len(commandList) <= 0 {
-		cli.PrintDebugFmt("Raw command: %s", fullCommand)
-		cli.PrintErrorString("Error trying to format command!")
-		return "", []string{}
-	}
-	if len(commandList) <= 1 {
-		return commandList[0], []string{}
-	}
-	return commandList[0], commandList[1:]
-}
-
-func runCommand(streamOutput bool, command string, args ...string) RunResult {
-	cmd := exec.Command(command, args...)
+func runCommand(streamOutput bool, toRun utils.ExecutionDetails) RunResult {
+	cmd := exec.Command(toRun.Command, toRun.Args...)
 
 	output := []string{}
 
-	cli.PrintDebugFmt("Running command %s with args %s", command, args)
+	cli.PrintDebugFmt("Running command %s with args %s", toRun.Command, toRun.Args)
+
+	if toRun.WorkingDirectory != "" {
+		cmd.Dir = toRun.WorkingDirectory
+		cli.PrintDebugFmt("Setting working directory to %s", toRun.WorkingDirectory)
+	}
 
 	timeStart := time.Now()
 	ptmx, err := pty.Start(cmd)
@@ -82,9 +66,8 @@ func prepareTask(year int, day int, task int, lang Language) {
 
 	preparedSuccessfully := true
 
-	for _, element := range rawCommand {
-		command, args := formatCommand(element)
-		result := runCommand(false, command, args...)
+	for _, executionDetails := range rawCommand {
+		result := runCommand(false, executionDetails)
 
 		if result.exitCode != 0 {
 			cli.PrintErrorFmt("Preparation failed with exit code %d", result.exitCode)
@@ -98,11 +81,10 @@ func prepareTask(year int, day int, task int, lang Language) {
 	}
 }
 
-func runTask(day int, task int, rawCommand string) []string {
+func runTask(day int, task int, executionDetails utils.ExecutionDetails) []string {
 	s := cli.Spinner{}
 	s.Run(fmt.Sprintf("Running day %d task %d", day, task))
-	command, args := formatCommand(rawCommand)
-	result := runCommand(true, command, args...)
+	result := runCommand(true, executionDetails)
 	s.Stop()
 	if result.exitCode == 0 {
 		cli.PrintSuccessFmt("Task %d finished successfully after %s", task, result.executionDuration.Truncate(10000))

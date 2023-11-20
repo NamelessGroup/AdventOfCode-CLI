@@ -3,32 +3,31 @@ package languages
 import (
 	"aoc-cli/utils"
 	_ "embed"
-	"fmt"
 )
 
 type Python struct{}
 
 //go:embed python/runner.py
-var runner string
+var pythonRunnerFile string
 
 //go:embed python/task.py
-var task string
+var pythonTaskFile string
 
-func (p Python) GetSolveCommand(executionDirectory string, task int) string {
-	return fmt.Sprintf("python3 %srunner.py %d", executionDirectory, task)
+func (p Python) GetSolveCommand(executionDirectory string, task int) utils.ExecutionDetails {
+	return *utils.ToExecute("python3").Argf("%srunner.py", executionDirectory).Argf("%d", task)
 }
 
-func (p Python) GetTestCommand(executionDirectory string, task int) string {
-	return fmt.Sprintf("python3 %srunner.py %d test", executionDirectory, task)
+func (p Python) GetTestCommand(executionDirectory string, task int) utils.ExecutionDetails {
+	return *utils.ToExecute("python3").Argf("%srunner.py", executionDirectory).Argf("%d", task).Arg("test")
 }
 
-func (p Python) GetPreparationCommand(executionDirectory string, task int) []string {
-	return []string{}
+func (p Python) GetPreparationCommand(executionDirectory string, task int) []utils.ExecutionDetails {
+	return []utils.ExecutionDetails{}
 }
 
 func (p Python) GetFilesToWrite() []utils.FileTemplate {
-	runnerFile := utils.FileTemplate{Content: runner, Filename: "runner.py"}
-	taskFile := utils.FileTemplate{Content: task, Filename: "task.py"}
+	runnerFile := utils.FileTemplate{Content: pythonRunnerFile, Filename: "runner.py"}
+	taskFile := utils.FileTemplate{Content: pythonTaskFile, Filename: "task.py"}
 
 	return []utils.FileTemplate{runnerFile, taskFile}
 }
