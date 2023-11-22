@@ -14,9 +14,10 @@ type Language interface {
 
 func ResolveLanguage(lang string) (Language, error) {
 	languageMap := map[string]Language{
-		"test":   languages.Test{},
-		"python": languages.Python{},
-		"java":   languages.Java{},
+		"test":       languages.Test{},
+		"python":     languages.Python{},
+		"java":       languages.Java{},
+		"typescript": languages.TypeScript{},
 	}
 
 	if languageMap[lang] == nil {
