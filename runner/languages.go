@@ -18,6 +18,7 @@ func ResolveLanguage(lang string) (Language, error) {
 		"python":     languages.Python{},
 		"java":       languages.Java{},
 		"typescript": languages.TypeScript{},
+		"haskell":    languages.Haskell{},
 	}
 
 	if languageMap[lang] == nil {
