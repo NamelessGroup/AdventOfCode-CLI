@@ -4,3 +4,4 @@ __pycache__
 .DS_Store
 
 20**/**
+aoc-cli-config.json

@@ -14,11 +14,11 @@ var pythonRunnerFile string
 var pythonTaskFile string
 
 func (p Python) GetSolveCommand(executionDirectory string, task int) utils.ExecutionDetails {
-	return *utils.ToExecute("python3").Argf("%srunner.py", executionDirectory).Argf("%d", task)
+	return *utils.ToExecute("python").Arg("-u").Arg("runner.py").Argf("%d", task)
 }
 
 func (p Python) GetTestCommand(executionDirectory string, task int) utils.ExecutionDetails {
-	return *utils.ToExecute("python3").Argf("%srunner.py", executionDirectory).Argf("%d", task).Arg("test")
+	return *utils.ToExecute("python").Arg("-u").Arg("runner.py").Argf("%d", task).Arg("test")
 }
 
 func (p Python) GetPreparationCommand(executionDirectory string, task int) []utils.ExecutionDetails {
