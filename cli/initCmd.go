@@ -36,7 +36,13 @@ var initCommand = &cobra.Command{
 
 		warningSent := false
 
-		for idx, resource := range []string{"challenge1", "solveInput", "testInput", "testOutput1"} {
+		resourcesToGet := []string{"challenge1", "solveInput", "testInput", "testOutput1"}
+		getSecond, err := cmd.Flags().GetBool("second")
+		if err == nil && getSecond {
+			resourcesToGet = append(resourcesToGet, "challenge2", "testOutput2")
+		}
+
+		for idx, resource := range resourcesToGet {
 			_, err = aocweb.GetResource(resource, day, year)
 			if err != nil {
 				cli.PrintDebugFmt("Error requesting %s", resource)
@@ -46,10 +52,10 @@ var initCommand = &cobra.Command{
 					warningSent = true
 				}
 			}
-			p.Set("Downloading resources", (2.0+float64(idx))/6.0)
+			p.Set("Downloading resources", (2.0+float64(idx))/(2.0+float64(len(resourcesToGet))))
 		}
 
-		p.Set("Initializing language", 0.8333)
+		p.Set("Initializing language", (1.0+float64(len(resourcesToGet)))/(2.0+float64(len(resourcesToGet))))
 
 		filesToWrite := lang.GetFilesToWrite()
 		for _, file := range filesToWrite {
@@ -67,4 +73,7 @@ var initCommand = &cobra.Command{
 func init() {
 	addCommand(initCommand)
 	addPersistentFlags(initCommand)
+	addCookieFlag(initCommand)
+
+	initCommand.Flags().Bool("second", false, "Gets the second challange too.")
 }

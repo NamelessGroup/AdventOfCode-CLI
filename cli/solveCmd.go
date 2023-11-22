@@ -7,7 +7,6 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 var solveCommand = &cobra.Command{
@@ -44,6 +43,11 @@ var solveCommand = &cobra.Command{
 			} else {
 				cli.PrintSuccess("Your solution is correct!")
 				cli.PrintSuccessFmt("Solved task %d of day %d of %d!", task, day, year)
+				_, err := aocweb.GetResource("challenge2", day, year)
+				if err != nil {
+					cli.PrintWarning("Could not get 2nd challenge")
+					cli.PrintDebug(err.Error())
+				}
 			}
 		}
 	},
@@ -52,8 +56,7 @@ var solveCommand = &cobra.Command{
 func init() {
 	addCommand(solveCommand)
 	addPersistentFlags(solveCommand)
+	addCookieFlag(solveCommand)
 
-	solveCommand.Flags().StringP("cookie", "c", viper.GetString("cookie"), "Session cookie to use for web requests")
-	viper.BindPFlag("cookie", solveCommand.Flags().Lookup("cookie"))
 	solveCommand.Flags().BoolP("submit", "s", false, "Submit the solution to the server")
 }

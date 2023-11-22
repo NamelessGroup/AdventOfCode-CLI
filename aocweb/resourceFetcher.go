@@ -44,12 +44,12 @@ func executeRequest(req *http.Request) (string, error) {
 	return string(body), nil
 }
 
-func GetDayPage(day int, year int) (string, error) {
+func GetDayPage(day int, year int, task int) (string, error) {
 	html, err := get(day, year, "")
 	if err != nil {
 		return "", err
 	}
-	wholeArticle := regexp.MustCompile("(?ms)<article(.*)</article>").FindString(html)
+	wholeArticle := regexp.MustCompile("(?ms)<article(.*?)</article>").FindAllStringSubmatch(html, -1)[task - 1][1]
 	wholeArticle = replaceTagRegex(wholeArticle, "</?article>", "")
 
 	wholeArticle = replaceTagRegex(wholeArticle, "<pre><code>", "\n```\n")

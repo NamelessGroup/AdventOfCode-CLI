@@ -17,11 +17,15 @@ var resources = make(map[string]Resource)
 func init() {
 	resources["challenge1"] = Resource{
 		fileName: "challenge1.md",
-		getter:   GetDayPage,
+		getter:   (func(day int, year int) (string, error) {
+			return GetDayPage(day, year, 1)
+		}),
 	}
 	resources["challenge2"] = Resource{
 		fileName: "challenge2.md",
-		getter:   GetDayPage,
+		getter:   (func(day int, year int) (string, error) {
+			return GetDayPage(day, year, 2)
+		}),
 	}
 	resources["solveInput"] = Resource{
 		fileName: "solve.in",
