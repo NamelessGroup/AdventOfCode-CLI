@@ -30,6 +30,7 @@ func addPersistentFlags(cmd *cobra.Command) {
 	currentTime := time.Now()
 
 	cmd.PersistentFlags().StringP("lang", "l", viper.GetString("lang"), "Language to run")
+	viper.BindPFlag("lang", cmd.Flags().Lookup("lang"))
 	cmd.PersistentFlags().IntP("day", "d", currentTime.Day(), "Day to run")
 	cmd.PersistentFlags().IntP("year", "y", currentTime.Year(), "Year to run")
 	cmd.PersistentFlags().Bool("debug", false, "Enable debug output")
@@ -37,7 +38,7 @@ func addPersistentFlags(cmd *cobra.Command) {
 
 func addCookieFlag(cmd *cobra.Command) {
 	cmd.Flags().StringP("cookie", "c", viper.GetString("cookie"), "Cookie for web requests")
-	viper.BindPFlag("cookie", solveCommand.Flags().Lookup("cookie"))
+	viper.BindPFlag("cookie", cmd.Flags().Lookup("cookie"))
 }
 
 func Execute() {
@@ -51,8 +52,6 @@ func init() {
 	viper.AddConfigPath("$HOME/.config/aoc-cli")
 	viper.AddConfigPath(".")
 	viper.SetConfigType("json")
-
-	viper.SetDefault("lang", "test")
 
 	err := viper.ReadInConfig()
 	if err != nil {

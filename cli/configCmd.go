@@ -2,6 +2,12 @@ package cli
 
 import (
 	cli "aoc-cli/output"
+	"aoc-cli/utils"
+	"errors"
+	"os"
+	"slices"
+
+	"strings"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -9,14 +15,35 @@ import (
 
 var configCommand = &cobra.Command{
 	Use:   "config [key] [value]",
-	Short: "Sets up the files for a given day",
-	Long:  "Sets up the files for a given day. \n If no day is specified it uses the current day. \n If no language is specified it uses your default language.",
+	Short: "Sets the config in the config file",
+	Long:  "",
 	Run: func(cmd *cobra.Command, args []string) {
-		viper.Set(args[0], args[1])
+
+		if strings.Trim(viper.GetViper().ConfigFileUsed(), " ") == "" {
+			configName := "aoc-cli-config.json"
+			if _, err := os.Stat(configName); errors.Is(err, os.ErrNotExist) {
+				cli.PrintLog("Writing config file", true)
+				os.WriteFile(configName, []byte("{}"), 0644)
+			}
+			err := viper.ReadInConfig()
+			if err != nil {
+				cli.PrintError(utils.AOCCLIError("Could not create config file"))
+			}
+		}
+
+		validConfigs := []string{"cookie", "lang"}
+		configName := args[0]
+		configValue := args[1]
+
+
+		if !slices.Contains(validConfigs, configName) {
+			cli.PrintError(utils.AOCCLIErrorf("%s is not a valid config point", configName))
+		}
+		
+		viper.Set(configName, configValue)
 		err := viper.WriteConfig()
 		if err != nil {
 			cli.PrintError(err)
-			return
 		}
 	},
 }
