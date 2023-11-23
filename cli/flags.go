@@ -13,13 +13,14 @@ import (
 func addPersistentFlags(cmd *cobra.Command) {
 	currentTime := time.Now()
 
-	cmd.PersistentFlags().StringP("lang", "l", viper.GetString("lang"), "Language to run")
+	cmd.PersistentFlags().StringP("lang", "l", "", "Language to run")
+	viper.BindPFlag("language", cmd.PersistentFlags().Lookup("lang"))
 	cmd.PersistentFlags().IntP("day", "d", currentTime.Day(), "Day to run")
 	cmd.PersistentFlags().IntP("year", "y", currentTime.Year(), "Year to run")
 	cmd.PersistentFlags().Bool("debug", false, "Enable debug output")
 
-	cmd.PersistentFlags().Bool("disable-emojis", viper.GetBool("disableEmojis"), "Disable emojis in the output")
-	viper.BindPFlag("disableEmojis", cmd.Flags().Lookup("disable-emojis"))
+	cmd.PersistentFlags().Bool("disable-emojis", false, "Disable emojis in the output")
+	viper.BindPFlag("disableEmojis", cmd.PersistentFlags().Lookup("disable-emojis"))
 }
 
 func addCookieFlag(cmd *cobra.Command) {
@@ -75,10 +76,7 @@ func getFlags(cmd *cobra.Command) (int, int, runner.Language, error) {
 		return -1, -1, nil, utils.AOCCLIError("Day must be between 1 and 25").DebugInfof("cli", "Inputted day: %d", day)
 	}
 
-	lang, langErr := cmd.Flags().GetString("lang")
-	if langErr != nil {
-		return -1, -1, nil, langErr
-	}
+	lang := viper.GetString("language")
 	langResolved, err := runner.ResolveLanguage(lang)
 	if err != nil {
 		return -1, -1, nil, err
