@@ -74,6 +74,5 @@ func init() {
 	addCommand(initCommand)
 	addPersistentFlags(initCommand)
 	addCookieFlag(initCommand)
-
-	initCommand.Flags().Bool("second", false, "Gets the second challange too.")
+	addSecondChallengeFlag(initCommand)
 }
