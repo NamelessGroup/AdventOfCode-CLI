@@ -17,19 +17,22 @@ func addPersistentFlags(cmd *cobra.Command) {
 	cmd.PersistentFlags().IntP("day", "d", currentTime.Day(), "Day to run")
 	cmd.PersistentFlags().IntP("year", "y", currentTime.Year(), "Year to run")
 	cmd.PersistentFlags().Bool("debug", false, "Enable debug output")
+
+	cmd.PersistentFlags().Bool("disable-emojis", viper.GetBool("disableEmojis"), "Disable emojis in the output")
+	viper.BindPFlag("disableEmojis", cmd.Flags().Lookup("disable-emojis"))
 }
 
 func addCookieFlag(cmd *cobra.Command) {
 	cmd.Flags().StringP("cookie", "c", viper.GetString("cookie"), "Cookie for web requests")
-	viper.BindPFlag("cookie", solveCommand.Flags().Lookup("cookie"))
+	viper.BindPFlag("cookie", cmd.Flags().Lookup("cookie"))
 }
 
 func addSecondChallengeFlag(cmd *cobra.Command) {
-	initCommand.Flags().Bool("second", false, "Include fetching the second challange")
+	cmd.Flags().Bool("second", false, "Include fetching the second challange")
 }
 
 func addSubmitFlag(cmd *cobra.Command) {
-	solveCommand.Flags().BoolP("submit", "s", false, "Submit the solution to the server")
+	cmd.Flags().BoolP("submit", "s", false, "Submit the solution to the server")
 }
 
 func getTask(args []string) (int, error) {

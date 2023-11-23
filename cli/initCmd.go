@@ -23,18 +23,6 @@ var initCommand = &cobra.Command{
 		}
 
 		cli.PrintDebugFmt("Initializing day %d in year %d using language %s", day, year, lang)
-		p := cli.ProgressBar{}
-		p.Run("Creating directories")
-		dir := utils.GetChallengeDirectory(year, day)
-		err := os.MkdirAll(dir, 0755)
-		if err != nil {
-			p.Cancel("Could not create directories")
-			cli.PrintError(err)
-			return
-		}
-		p.Set("Downloading resources", 0.1666)
-
-		warningSent := false
 
 		resourcesToGet := []string{"challenge1", "solveInput", "testInput", "testOutput1"}
 		getSecond, err := cmd.Flags().GetBool("second")
@@ -42,7 +30,20 @@ var initCommand = &cobra.Command{
 			resourcesToGet = append(resourcesToGet, "challenge2", "testOutput2")
 		}
 
-		for idx, resource := range resourcesToGet {
+		p := cli.NewProgressBar(2+len(resourcesToGet), "Creating directories")
+
+		dir := utils.GetChallengeDirectory(year, day)
+		err = os.MkdirAll(dir, 0755)
+		if err != nil {
+			p.Cancel("Could not create directories")
+			cli.PrintError(err)
+			return
+		}
+		p.GotoNextTask("Downloading resources")
+
+		warningSent := false
+
+		for _, resource := range resourcesToGet {
 			_, err = aocweb.GetResource(resource, day, year)
 			if err != nil {
 				cli.PrintDebugFmt("Error requesting %s", resource)
@@ -52,10 +53,10 @@ var initCommand = &cobra.Command{
 					warningSent = true
 				}
 			}
-			p.Set("Downloading resources", (2.0+float64(idx))/(2.0+float64(len(resourcesToGet))))
+			p.GotoNextTask("Downloading ressources")
 		}
 
-		p.Set("Initializing language", (1.0+float64(len(resourcesToGet)))/(2.0+float64(len(resourcesToGet))))
+		p.GotoNextTask("Initializing language")
 
 		filesToWrite := lang.GetFilesToWrite()
 		for _, file := range filesToWrite {

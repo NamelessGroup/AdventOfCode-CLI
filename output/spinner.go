@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"strings"
 	"time"
-
-	"github.com/fatih/color"
 )
 
 type Spinner struct {
@@ -27,12 +25,16 @@ func (s *Spinner) draw() {
 
 	for !s._stop {
 		s._frame = (s._frame + 1) % len(frames)
-		Print(fmt.Sprintf("%s %s", frames[s._frame], s._message), color.BgBlack, Format{}, false)
+		PrintRaw(fmt.Sprintf("%s %s", frames[s._frame], s._message), Format{
+			NewLine: false,
+		})
 		time.Sleep(100 * time.Millisecond)
 	}
 }
 
 func (s *Spinner) Stop() {
 	s._stop = true
-	Print("", color.BgBlack, Format{}, false)
+	PrintRaw("", Format{
+		NewLine: false,
+	})
 }
