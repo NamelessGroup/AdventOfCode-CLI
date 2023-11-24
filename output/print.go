@@ -9,16 +9,34 @@ import (
 	"github.com/fatih/color"
 )
 
+const (
+	ColorLog     = color.FgWhite
+	ColorWarning = color.FgYellow
+	ColorError   = color.FgRed
+	ColorDebug   = color.FgMagenta
+	ColorSuccess = color.FgGreen
+)
+
 type Format struct {
-	underline bool
-	bold      bool
-	italic    bool
+	Underline bool
+	Bold      bool
+	Italic    bool
+	Color     color.Attribute
+	NewLine   bool
+	Append    bool
 }
 
 var PrintDebugMessages = false
+var DisableEmojis = false
 
 func PrintErrorString(message string) {
-	Print(message, color.FgRed, Format{false, false, false}, true)
+	if !DisableEmojis {
+		message = "❕ " + message
+	}
+	PrintRaw(message, Format{
+		Color:   ColorError,
+		NewLine: true,
+	})
 	os.Exit(1)
 }
 
@@ -34,8 +52,14 @@ func PrintError(err error) {
 	PrintErrorString(err.Error())
 }
 
-func PrintLog(message string, breakAtEnd bool) {
-	Print(message, color.FgWhite, Format{false, false, false}, breakAtEnd)
+func PrintLog(message string, newline bool) {
+	if !DisableEmojis {
+		message = "ℹ " + message
+	}
+	PrintRaw(message, Format{
+		Color:   ColorLog,
+		NewLine: newline,
+	})
 }
 
 func PrintLogFmt(message string, a ...any) {
@@ -44,7 +68,13 @@ func PrintLogFmt(message string, a ...any) {
 
 func PrintDebug(message string) {
 	if PrintDebugMessages {
-		Print(message, color.FgMagenta, Format{false, false, true}, true)
+		if !DisableEmojis {
+			message = "🐞 " + message
+		}
+		PrintRaw(message, Format{
+			Color:   ColorDebug,
+			NewLine: true,
+		})
 	}
 }
 
@@ -61,7 +91,13 @@ func PrintDebugFmt(message string, a ...any) {
 }
 
 func PrintSuccess(message string) {
-	Print(message, color.FgGreen, Format{false, true, false}, true)
+	if !DisableEmojis {
+		message = "✔️ " + message
+	}
+	PrintRaw(message, Format{
+		Color:   ColorSuccess,
+		NewLine: true,
+	})
 }
 
 func PrintSuccessFmt(message string, a ...any) {
@@ -69,26 +105,39 @@ func PrintSuccessFmt(message string, a ...any) {
 }
 
 func PrintWarning(message string) {
-	Print(message, color.FgYellow, Format{false, false, false}, true)
+	if !DisableEmojis {
+		message = "⚠️ " + message
+	}
+	PrintRaw(message, Format{
+		Color:   ColorWarning,
+		NewLine: true,
+	})
 }
 
 func PrintWarningFmt(message string, a ...any) {
 	PrintWarning(fmt.Sprintf(message, a...))
 }
 
-func Print(message string, col color.Attribute, format Format, breakAtEnd bool) {
-	c := color.New(col)
-	if format.underline {
-		c.Add(color.Underline)
+func PrintRaw(message string, format Format) {
+	c := color.New()
+	if format.Color != 0 {
+		c.Add(format.Color)
 	}
-	if format.bold {
+	if format.Bold {
 		c.Add(color.Bold)
 	}
-	if format.italic {
+	if format.Italic {
 		c.Add(color.Italic)
 	}
-	c.Printf("\r\033[K%s", message)
-	if breakAtEnd {
+	if format.Underline {
+		c.Add(color.Underline)
+	}
+
+	if !format.Append {
+		c.Print("\r\033[K")
+	}
+	c.Print(message)
+	if format.NewLine {
 		c.Println()
 	}
 }

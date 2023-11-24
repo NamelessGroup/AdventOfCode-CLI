@@ -57,6 +57,5 @@ func init() {
 	addCommand(solveCommand)
 	addPersistentFlags(solveCommand)
 	addCookieFlag(solveCommand)
-
-	solveCommand.Flags().BoolP("submit", "s", false, "Submit the solution to the server")
+	addSubmitFlag(solveCommand)
 }

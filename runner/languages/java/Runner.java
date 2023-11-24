@@ -6,13 +6,13 @@ import java.util.Scanner;
 public class Runner {
 
     public static void main(String[] args) {
-        if (args.length < 2) {
+        if (args.length < 1) {
             System.out.println("Error with the run command");
             return;
         }
 
         // Load input file
-        File file = new File(args[1] + (args.length >= 3 && args[1].equals("test") ? "test.in" : "solve.in"));
+        File file = new File((args.length >= 2 && args[1].equals("test") ? "test.in" : "solve.in"));
         if (!file.exists()) {
             System.out.println("File not found");
             return;

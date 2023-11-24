@@ -2,76 +2,124 @@ package cli
 
 import (
 	"fmt"
-
-	"github.com/fatih/color"
 )
 
 type ProgressBar struct {
-	_percentage float64
-	_message    string
+	_taskCount int
+	_tasksDone int
+	_message   string
 }
 
-func (p *ProgressBar) Run(message string) {
-	p._message = message
-	p._percentage = 0
+func NewProgressBar(initialTaskCount int, initialMessage string) *ProgressBar {
+	bar := &ProgressBar{
+		_taskCount: initialTaskCount,
+		_tasksDone: 0,
+		_message:   initialMessage,
+	}
 
-	go p.draw(color.FgWhite, false)
+	bar.draw()
+
+	return bar
 }
 
-func (p *ProgressBar) Set(message string, percentage float64) {
-	p._message = message
-	p.SetPercentage(percentage)
+func (p *ProgressBar) getPercentage() float64 {
+	return float64(p._tasksDone) / float64(p._taskCount)
 }
 
-func (p *ProgressBar) SetPercentage(percentage float64) {
-	p._percentage = min(1, max(0, percentage))
-
-	go p.draw(color.FgWhite, false)
+func (p *ProgressBar) GotoNextTask(newTask string) {
+	p._message = newTask
+	if p._tasksDone < p._taskCount {
+		p._tasksDone += 1
+	}
 }
 
 func (p *ProgressBar) SetMessage(message string) {
 	p._message = message
 
-	go p.draw(color.FgWhite, false)
+	p.draw()
+}
+
+func (p *ProgressBar) IncreaseDoneTasks() {
+	if p._tasksDone < p._taskCount {
+		p._tasksDone += 1
+	}
+
+	p.draw()
+}
+
+func (p *ProgressBar) SetDoneTasks(tasksDone int) {
+	p._tasksDone = tasksDone
+
+	p.draw()
+}
+
+func (p *ProgressBar) SetTotalTasks(totalTasks int) {
+	p._taskCount = totalTasks
+
+	p.draw()
 }
 
 func (p *ProgressBar) Finish(message string) {
-	p._percentage = 1
-	p._message = message
+	barString := p.getBarWithPercentage()
 
-	p.draw(color.FgGreen, true)
+	PrintRaw(barString, Format{
+		Color:   ColorSuccess,
+		NewLine: false,
+	})
+	PrintRaw(message, Format{
+		NewLine: true,
+		Append:  true,
+	})
 }
 
 func (p *ProgressBar) Cancel(message string) {
-	p.draw(color.FgRed, true)
+	barString := p.getBarWithPercentage()
+
+	PrintRaw(barString, Format{
+		Color:   ColorError,
+		NewLine: false,
+	})
+	PrintRaw(message, Format{
+		NewLine: true,
+		Append:  true,
+	})
 }
 
-func (p *ProgressBar) draw(col color.Attribute, breakAtEnd bool) {
+func (p *ProgressBar) getBarWithPercentage() string {
 	barWidth := 20
-	bar := ""
-	for i := 0; i < barWidth; i++ {
-		bar += getTenthPercentage(p._percentage, i, barWidth)
-	}
+	bar := getFormattedBar(p.getPercentage(), barWidth)
+	percentageFormated := fmt.Sprintf("%.2f%%", p.getPercentage()*100)
 
-	percentageFormated := fmt.Sprintf("%.2f%%", p._percentage*100)
 	spacesLength := 10 - len(percentageFormated)
 	spaces := ""
 	for i := 0; i < spacesLength; i++ {
 		spaces += " "
 	}
 
-	Print(fmt.Sprintf("[%s] %s%s%s", bar, percentageFormated, spaces, p._message), col, Format{}, breakAtEnd)
+	return fmt.Sprintf("[%s] %s%s", bar, percentageFormated, spaces)
 }
 
-func getTenthPercentage(percentage float64, index int, barLength int) string {
+func (p *ProgressBar) draw() {
+	barString := p.getBarWithPercentage()
+
+	PrintRaw(fmt.Sprintf("%s%s", barString, p._message), Format{
+		NewLine: false,
+	})
+}
+
+func getFormattedBar(percentage float64, barLength int) string {
 	bars := []string{" ", "▏", "▎", "▍", "▌", "▋", "▊", "▉", "█"}
 
-	// [12345678]
-	if int(percentage*float64(barLength)) > index {
-		return bars[len(bars)-1]
-	} else if int(percentage*float64(barLength)) < index {
-		return bars[0]
-	} else {
-		return bars[int((percentage*float64(barLength)-float64(index))*float64(len(bars)))]
+	formattedBar := ""
+	for i := 0; i < barLength; i++ {
+		if int(percentage*float64(barLength)) > i {
+			formattedBar += bars[len(bars)-1]
+		} else if int(percentage*float64(barLength)) < i {
+			formattedBar += bars[0]
+		} else {
+			formattedBar += bars[int((percentage*float64(barLength)-float64(i))*float64(len(bars)))]
+		}
 	}
+
+	return formattedBar
 }
