@@ -33,3 +33,7 @@ func (j Java) GetFilesToWrite() []utils.FileTemplate {
 
 	return []utils.FileTemplate{runnerFile, taskFile}
 }
+
+func (j Java) GetLanguageSpecificConfigKeys() []string {
+	return []string{}
+}

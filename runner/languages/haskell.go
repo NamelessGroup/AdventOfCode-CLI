@@ -31,3 +31,7 @@ func (h Haskell) GetFilesToWrite() []utils.FileTemplate {
 
 	return []utils.FileTemplate{runnerFile, taskFile}
 }
+
+func (h Haskell) GetLanguageSpecificConfigKeys() []string {
+	return []string{}
+}

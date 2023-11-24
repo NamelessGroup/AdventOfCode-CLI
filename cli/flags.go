@@ -43,6 +43,10 @@ func addSubmitFlag(cmd *cobra.Command) {
 	cmd.Flags().BoolP("submit", "s", false, "Submit the solution to the server")
 }
 
+func addConfigLanguageFlag(cmd *cobra.Command) {
+	cmd.Flags().StringP("lang", "l", "", "Language to list options from")
+}
+
 func getTask(args []string) (int, error) {
 	if len(args) == 0 {
 		return 1, nil
