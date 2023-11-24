@@ -14,7 +14,7 @@ import (
 )
 
 func postAnswer(day int, year int, task int, solution string) (string, error) {
-	cli.PrintDebugFmt("Submitting solution for day %d year %d", day, year)
+	cli.ToPrintf("Submitting solution for day %d year %d", day, year).PrintDebug()
 	reqBody := []byte(fmt.Sprintf("level=%d&answer=%s", task, solution))
 	req, err := http.NewRequest(http.MethodPost, fmt.Sprintf("https://adventofcode.com/%d/day/%d/answer", year, day), bytes.NewReader(reqBody))
 	if err != nil {

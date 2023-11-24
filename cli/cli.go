@@ -1,7 +1,6 @@
 package cli
 
 import (
-	"aoc-cli/aocweb"
 	cli "aoc-cli/output"
 
 	"github.com/spf13/cobra"
@@ -13,9 +12,7 @@ var rootCmd = &cobra.Command{
 	Short: "aoc-cli is a CLI for Advent of Code",
 	Long:  "aoc-cli is a CLI for Advent of Code",
 	Run: func(cmd *cobra.Command, args []string) {
-		cli.PrintWarning("No command specified")
-		_, err := aocweb.GetResource("challenge2", 3, 2022)
-		println(err.Error())
+		cli.ToPrint("No command specified").PrintWarning()
 	},
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
 		debug, _ := cmd.Flags().GetBool("debug")
@@ -27,7 +24,7 @@ var rootCmd = &cobra.Command{
 
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
-		cli.PrintError(err)
+		cli.PrintFromError(err).PrintError()
 	}
 }
 
@@ -39,7 +36,7 @@ func init() {
 
 	err := viper.ReadInConfig()
 	if err != nil {
-		cli.PrintWarning("Could not read config file")
+		cli.ToPrint("Could not read config file").PrintWarning()
 	}
 }
 

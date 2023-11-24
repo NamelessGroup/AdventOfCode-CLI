@@ -18,11 +18,11 @@ var initCommand = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		day, year, lang, flagErr := getFlags(cmd)
 		if flagErr != nil {
-			cli.PrintError(flagErr)
+			cli.PrintFromError(flagErr).PrintError()
 			return
 		}
 
-		cli.PrintDebugFmt("Initializing day %d in year %d using language %s", day, year, lang)
+		cli.ToPrintf("Initializing day %d in year %d using language %s", day, year, lang).PrintDebug()
 
 		resourcesToGet := []string{"challenge1", "solveInput", "testInput", "testOutput1"}
 		getSecond, err := cmd.Flags().GetBool("second")
@@ -36,7 +36,7 @@ var initCommand = &cobra.Command{
 		err = os.MkdirAll(dir, 0755)
 		if err != nil {
 			p.Cancel("Could not create directories")
-			cli.PrintError(err)
+			cli.PrintFromError(err).PrintError()
 			return
 		}
 		p.GotoNextTask("Downloading resources")
@@ -46,10 +46,10 @@ var initCommand = &cobra.Command{
 		for _, resource := range resourcesToGet {
 			_, err = aocweb.GetResource(resource, day, year)
 			if err != nil {
-				cli.PrintDebugFmt("Error requesting %s", resource)
-				cli.PrintDebugError(err)
+				cli.ToPrintf("Error requesting %s", resource).PrintDebug()
+				cli.PrintFromError(err).PrintDebug()
 				if !warningSent {
-					cli.PrintWarning("Could not access web page")
+					cli.ToPrint("Could not access web page").PrintWarning()
 					warningSent = true
 				}
 			}
@@ -62,7 +62,7 @@ var initCommand = &cobra.Command{
 		for _, file := range filesToWrite {
 			fullPath := fmt.Sprintf("%s%s", dir, file.Filename)
 			if _, err := os.Stat(fullPath); errors.Is(err, os.ErrNotExist) {
-				cli.PrintDebugFmt("%s doesnt exist, writing template", fullPath)
+				cli.ToPrintf("%s doesnt exist, writing template", fullPath).PrintDebug()
 				os.WriteFile(fullPath, []byte(file.Content), 0644)
 			}
 		}

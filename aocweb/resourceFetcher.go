@@ -13,7 +13,7 @@ import (
 )
 
 func get(day int, year int, path string) (string, error) {
-	cli.PrintDebugFmt("Getting %s for day %d year %d from the website", path, day, year)
+	cli.ToPrintf("Getting %s for day %d year %d from the website", path, day, year).PrintDebug()
 	req, err := http.NewRequest("GET", fmt.Sprintf("https://adventofcode.com/%d/day/%d%s", year, day, path), nil)
 	if err != nil {
 		return "", err
@@ -32,7 +32,7 @@ func executeRequest(req *http.Request) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	cli.PrintDebugFmt("Got status code %d", result.StatusCode)
+	cli.ToPrintf("Got status code %d", result.StatusCode).PrintDebug()
 	if result.StatusCode != 200 {
 		return "", utils.AOCCLIErrorf("Got status code %d", result.StatusCode)
 	}
@@ -49,7 +49,7 @@ func GetDayPage(day int, year int, task int) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	wholeArticle := regexp.MustCompile("(?ms)<article(.*?)</article>").FindAllStringSubmatch(html, -1)[task - 1][1]
+	wholeArticle := regexp.MustCompile("(?ms)<article(.*?)</article>").FindAllStringSubmatch(html, -1)[task-1][1]
 	wholeArticle = replaceTagRegex(wholeArticle, "</?article>", "")
 
 	wholeArticle = replaceTagRegex(wholeArticle, "<pre><code>", "\n```\n")

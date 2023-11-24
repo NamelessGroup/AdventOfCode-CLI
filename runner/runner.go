@@ -23,35 +23,35 @@ func runCommand(streamOutput bool, toRun utils.ExecutionDetails, workingDirector
 
 	output := []string{}
 
-	cli.PrintDebugFmt("Running command %s with args %s", toRun.Command, toRun.Args)
+	cli.ToPrintf("Running command %s with args %s", toRun.Command, toRun.Args).PrintDebug()
 
 	if toRun.WorkingDirectory == "" {
 		cmd.Dir = workingDirectory
 	} else {
 		cmd.Dir = toRun.WorkingDirectory
 	}
-	cli.PrintDebugFmt("Setting working directory to %s", cmd.Dir)
+	cli.ToPrintf("Setting working directory to %s", cmd.Dir).PrintDebug()
 
 	timeStart := time.Now()
 
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
-		cli.PrintDebugError(err)
-		cli.PrintErrorString("Error getting stdout pipe!")
+		cli.PrintFromError(err).PrintDebug()
+		cli.ToPrint("Error getting stdout pipe!").PrintError()
 	}
 
 	stderr, err := cmd.StderrPipe()
 
 	if err != nil {
-		cli.PrintDebugError(err)
-		cli.PrintErrorString("Error getting stderr pipe!")
+		cli.PrintFromError(err).PrintDebug()
+		cli.ToPrint("Error getting stderr pipe!").PrintError()
 	}
 
 	err = cmd.Start()
 
 	if err != nil {
-		cli.PrintDebugError(err)
-		cli.PrintErrorString("Error starting command!")
+		cli.PrintFromError(err).PrintDebug()
+		cli.ToPrint("Error starting command!").PrintError()
 	}
 
 	scanner := bufio.NewScanner(stdout)
@@ -60,10 +60,7 @@ func runCommand(streamOutput bool, toRun utils.ExecutionDetails, workingDirector
 	for scanner.Scan() {
 		m := scanner.Text()
 		if streamOutput {
-			cli.PrintRaw(m, cli.Format{
-				Color:   color.FgCyan,
-				NewLine: true,
-			})
+			cli.ToPrint(m).Color(color.FgCyan).Italic().Print()
 		}
 		output = append(output, m)
 	}
@@ -73,10 +70,7 @@ func runCommand(streamOutput bool, toRun utils.ExecutionDetails, workingDirector
 	for errScanner.Scan() {
 		m := errScanner.Text()
 		if streamOutput {
-			cli.PrintRaw(m, cli.Format{
-				Color:   color.FgCyan,
-				NewLine: true,
-			})
+			cli.ToPrint(m).Color(color.FgCyan).Italic().Print()
 		}
 		output = append(output, m)
 	}
@@ -95,7 +89,7 @@ func prepareTask(year int, day int, task int, lang Language) {
 	if len(rawCommand) == 0 {
 		return
 	}
-	cli.PrintLogFmt("Preparing day %d task %d", day, task)
+	cli.ToPrintf("Preparing day %d task %d", day, task).PrintLog()
 
 	preparedSuccessfully := true
 
@@ -103,14 +97,14 @@ func prepareTask(year int, day int, task int, lang Language) {
 		result := runCommand(false, executionDetails, executionDirectory)
 
 		if result.exitCode != 0 {
-			cli.PrintErrorFmt("Preparation failed with exit code %d", result.exitCode)
+			cli.ToPrintf("Preparation failed with exit code %d", result.exitCode).PrintError()
 			preparedSuccessfully = false
 			break
 		}
 	}
 
 	if preparedSuccessfully {
-		cli.PrintSuccess("Successfully prepared!")
+		cli.ToPrint("Successfully prepared!").PrintSuccess()
 	}
 }
 
@@ -120,9 +114,9 @@ func runTask(day int, task int, executionDetails utils.ExecutionDetails, executi
 	result := runCommand(true, executionDetails, executionDirectory)
 	s.Stop()
 	if result.exitCode == 0 {
-		cli.PrintSuccessFmt("Task %d finished successfully after %s", task, result.executionDuration.Truncate(10000))
+		cli.ToPrintf("Task %d finished successfully after %s", task, result.executionDuration.Truncate(10000)).PrintSuccess()
 	} else {
-		cli.PrintErrorFmt("Task %d failed execution after %s with exit code %d", task, result.executionDuration.Truncate(10000), result.exitCode)
+		cli.ToPrintf("Task %d failed execution after %s with exit code %d", task, result.executionDuration.Truncate(10000), result.exitCode).PrintError()
 	}
 	return result.stdout
 }

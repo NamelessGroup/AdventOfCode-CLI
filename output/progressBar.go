@@ -62,27 +62,15 @@ func (p *ProgressBar) SetTotalTasks(totalTasks int) {
 func (p *ProgressBar) Finish(message string) {
 	barString := p.getBarWithPercentage()
 
-	PrintRaw(barString, Format{
-		Color:   ColorSuccess,
-		NewLine: false,
-	})
-	PrintRaw(message, Format{
-		NewLine: true,
-		Append:  true,
-	})
+	ToPrint(barString).Color(ColorSuccess).NewLine(false).Print()
+	ToPrint(message).Append(true).Print()
 }
 
 func (p *ProgressBar) Cancel(message string) {
 	barString := p.getBarWithPercentage()
 
-	PrintRaw(barString, Format{
-		Color:   ColorError,
-		NewLine: false,
-	})
-	PrintRaw(message, Format{
-		NewLine: true,
-		Append:  true,
-	})
+	ToPrint(barString).Color(ColorError).NewLine(false).Print()
+	ToPrint(message).Append(true).Print()
 }
 
 func (p *ProgressBar) getBarWithPercentage() string {
@@ -102,9 +90,7 @@ func (p *ProgressBar) getBarWithPercentage() string {
 func (p *ProgressBar) draw() {
 	barString := p.getBarWithPercentage()
 
-	PrintRaw(fmt.Sprintf("%s%s", barString, p._message), Format{
-		NewLine: false,
-	})
+	ToPrintf("%s%s", barString, p._message).NewLine(false).Print()
 }
 
 func getFormattedBar(percentage float64, barLength int) string {

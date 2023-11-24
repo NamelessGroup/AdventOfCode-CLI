@@ -4,7 +4,6 @@ import (
 	"aoc-cli/utils"
 	"errors"
 	"fmt"
-	"os"
 
 	"github.com/fatih/color"
 )
@@ -26,118 +25,145 @@ type Format struct {
 	Append    bool
 }
 
+type Printable struct {
+	underline bool
+	bold      bool
+	italic    bool
+	color     color.Attribute
+	newline   bool
+	append    bool
+	text      string
+}
+
 var PrintDebugMessages = false
 var DisableEmojis = false
 
-func PrintErrorString(message string) {
-	if !DisableEmojis {
-		message = "❕ " + message
+func ToPrint(message string) *Printable {
+	return &Printable{
+		underline: false,
+		bold:      false,
+		italic:    false,
+		color:     color.FgWhite,
+		newline:   true,
+		append:    false,
+		text:      message,
 	}
-	PrintRaw(message, Format{
-		Color:   ColorError,
-		NewLine: true,
-	})
-	os.Exit(1)
 }
 
-func PrintErrorFmt(message string, a ...any) {
-	PrintErrorString(fmt.Sprintf(message, a...))
+func ToPrintf(message string, a ...any) *Printable {
+	return ToPrint(fmt.Sprintf(message, a...))
 }
 
-func PrintError(err error) {
+func PrintFromError(err error) *Printable {
 	var aocCliError *utils.AOC_CLIError
 	if errors.As(err, &aocCliError) {
-		PrintDebug(aocCliError.DebugError())
+		ToPrint(aocCliError.DebugError()).PrintDebug()
 	}
-	PrintErrorString(err.Error())
+	return ToPrint(err.Error())
 }
 
-func PrintLog(message string, newline bool) {
-	if !DisableEmojis {
-		message = "ℹ " + message
-	}
-	PrintRaw(message, Format{
-		Color:   ColorLog,
-		NewLine: newline,
-	})
+func (p *Printable) Underlined() *Printable {
+	return p.SetUnderlined(true)
 }
 
-func PrintLogFmt(message string, a ...any) {
-	PrintLog(fmt.Sprintf(message, a...), true)
+func (p *Printable) SetUnderlined(underline bool) *Printable {
+	p.underline = underline
+	return p
 }
 
-func PrintDebug(message string) {
-	if PrintDebugMessages {
-		if !DisableEmojis {
-			message = "🐞 " + message
-		}
-		PrintRaw(message, Format{
-			Color:   ColorDebug,
-			NewLine: true,
-		})
-	}
+func (p *Printable) Bold() *Printable {
+	return p.SetBold(true)
 }
 
-func PrintDebugError(err error) {
-	var aocCliError *utils.AOC_CLIError
-	if errors.As(err, &aocCliError) {
-		PrintDebug(aocCliError.DebugError())
-	}
-	PrintDebug(err.Error())
+func (p *Printable) SetBold(bold bool) *Printable {
+	p.bold = bold
+	return p
 }
 
-func PrintDebugFmt(message string, a ...any) {
-	PrintDebug(fmt.Sprintf(message, a...))
+func (p *Printable) Italic() *Printable {
+	return p.SetItalic(true)
 }
 
-func PrintSuccess(message string) {
-	if !DisableEmojis {
-		message = "✔️ " + message
-	}
-	PrintRaw(message, Format{
-		Color:   ColorSuccess,
-		NewLine: true,
-	})
+func (p *Printable) SetItalic(italic bool) *Printable {
+	p.italic = italic
+	return p
 }
 
-func PrintSuccessFmt(message string, a ...any) {
-	PrintSuccess(fmt.Sprintf(message, a...))
+func (p *Printable) Color(col color.Attribute) *Printable {
+	p.color = col
+	return p
 }
 
-func PrintWarning(message string) {
-	if !DisableEmojis {
-		message = "⚠️ " + message
-	}
-	PrintRaw(message, Format{
-		Color:   ColorWarning,
-		NewLine: true,
-	})
+func (p *Printable) NewLine(newline bool) *Printable {
+	p.newline = newline
+	return p
 }
 
-func PrintWarningFmt(message string, a ...any) {
-	PrintWarning(fmt.Sprintf(message, a...))
+func (p *Printable) Append(append bool) *Printable {
+	p.append = append
+	return p
 }
 
-func PrintRaw(message string, format Format) {
+func (p *Printable) Print() {
 	c := color.New()
-	if format.Color != 0 {
-		c.Add(format.Color)
-	}
-	if format.Bold {
+	c.Add(p.color)
+	if p.bold {
 		c.Add(color.Bold)
 	}
-	if format.Italic {
+	if p.italic {
 		c.Add(color.Italic)
 	}
-	if format.Underline {
+	if p.underline {
 		c.Add(color.Underline)
 	}
 
-	if !format.Append {
+	if !p.append {
 		c.Print("\r\033[K")
 	}
-	c.Print(message)
-	if format.NewLine {
+	c.Print(p.text)
+	if p.newline {
 		c.Println()
+	}
+}
+
+func (p *Printable) PrintLog() {
+	if !DisableEmojis {
+		p.text = "ℹ " + p.text
+	}
+	p.color = ColorLog
+	p.Print()
+}
+
+func (p *Printable) PrintSuccess() {
+	if !DisableEmojis {
+		p.text = "✔️ " + p.text
+	}
+	p.color = ColorSuccess
+	p.Print()
+}
+
+func (p *Printable) PrintWarning() {
+	if !DisableEmojis {
+		p.text = "⚠️ " + p.text
+	}
+	p.color = ColorWarning
+	p.Print()
+}
+
+func (p *Printable) PrintError() {
+	if !DisableEmojis {
+		p.text = "❕ " + p.text
+	}
+	p.color = ColorError
+	p.Print()
+}
+
+func (p *Printable) PrintDebug() {
+	if !DisableEmojis {
+		p.text = "🐞 " + p.text
+	}
+	p.color = ColorDebug
+	if PrintDebugMessages {
+		p.Print()
 	}
 }

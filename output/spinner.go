@@ -1,7 +1,6 @@
 package cli
 
 import (
-	"fmt"
 	"strings"
 	"time"
 )
@@ -25,16 +24,12 @@ func (s *Spinner) draw() {
 
 	for !s._stop {
 		s._frame = (s._frame + 1) % len(frames)
-		PrintRaw(fmt.Sprintf("%s %s", frames[s._frame], s._message), Format{
-			NewLine: false,
-		})
+		ToPrintf("%s %s", frames[s._frame], s._message).NewLine(false).Print()
 		time.Sleep(100 * time.Millisecond)
 	}
 }
 
 func (s *Spinner) Stop() {
 	s._stop = true
-	PrintRaw("", Format{
-		NewLine: false,
-	})
+	ToPrint("").NewLine(false).Print()
 }

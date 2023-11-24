@@ -22,12 +22,12 @@ var configCommand = &cobra.Command{
 		if strings.Trim(viper.GetViper().ConfigFileUsed(), " ") == "" {
 			configName := "aoc-cli-config.json"
 			if _, err := os.Stat(configName); errors.Is(err, os.ErrNotExist) {
-				cli.PrintLog("Writing config file", true)
+				cli.ToPrint("Writing config file").PrintLog()
 				os.WriteFile(configName, []byte("{}"), 0644)
 			}
 			err := viper.ReadInConfig()
 			if err != nil {
-				cli.PrintError(utils.AOCCLIError("Could not create config file"))
+				cli.PrintFromError(utils.AOCCLIError("Could not create config file")).PrintError()
 			}
 		}
 
@@ -35,15 +35,14 @@ var configCommand = &cobra.Command{
 		configName := args[0]
 		configValue := args[1]
 
-
 		if !slices.Contains(validConfigs, configName) {
-			cli.PrintError(utils.AOCCLIErrorf("%s is not a valid config point", configName))
+			cli.PrintFromError(utils.AOCCLIErrorf("%s is not a valid config point", configName)).PrintError()
 		}
-		
+
 		viper.Set(configName, configValue)
 		err := viper.WriteConfig()
 		if err != nil {
-			cli.PrintError(err)
+			cli.PrintFromError(err).PrintError()
 		}
 	},
 }

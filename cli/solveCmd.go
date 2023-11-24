@@ -4,7 +4,6 @@ import (
 	"aoc-cli/aocweb"
 	cli "aoc-cli/output"
 	"aoc-cli/runner"
-	"fmt"
 
 	"github.com/spf13/cobra"
 )
@@ -16,37 +15,37 @@ var solveCommand = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		day, year, lang, flagErr := getFlags(cmd)
 		if flagErr != nil {
-			cli.PrintError(flagErr)
+			cli.PrintFromError(flagErr).PrintError()
 			return
 		}
 
 		task, taskErr := getTask(args)
 		if taskErr != nil {
-			cli.PrintError(taskErr)
+			cli.PrintFromError(taskErr).PrintError()
 			return
 		}
 
-		cli.PrintDebug(fmt.Sprintf("Solving task %d of day %d in year %d using language %s", task, day, year, lang))
+		cli.ToPrintf("Solving task %d of day %d in year %d using language %s", task, day, year, lang).PrintDebug()
 		runResult := runner.SolveDay(year, day, task, lang)
-		cli.PrintSuccessFmt("Your soulution: %s", runResult[len(runResult)-1])
+		cli.ToPrintf("Your soulution: %s", runResult[len(runResult)-1]).PrintSuccess()
 
 		submit, err := cmd.Flags().GetBool("submit")
 		if err != nil {
-			cli.PrintDebugError(err)
+			cli.PrintFromError(err).PrintDebug()
 			return
 		}
 		if submit {
-			cli.PrintLog("Submitting solution", false)
+			cli.ToPrint("Submitting solution").NewLine(false).PrintLog()
 			answer := aocweb.Submit(day, year, task, runResult[len(runResult)-1])
 			if answer != nil {
-				cli.PrintError(answer)
+				cli.PrintFromError(answer).PrintError()
 			} else {
-				cli.PrintSuccess("Your solution is correct!")
-				cli.PrintSuccessFmt("Solved task %d of day %d of %d!", task, day, year)
+				cli.ToPrint("Your solution is correct!").PrintSuccess()
+				cli.ToPrintf("Solved task %d of day %d of %d!", task, day, year).PrintSuccess()
 				_, err := aocweb.GetResource("challenge2", day, year)
 				if err != nil {
-					cli.PrintWarning("Could not get 2nd challenge")
-					cli.PrintDebug(err.Error())
+					cli.ToPrint("Could not get 2nd challenge").PrintWarning()
+					cli.PrintFromError(err).PrintDebug()
 				}
 			}
 		}

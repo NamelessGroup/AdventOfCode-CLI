@@ -16,29 +16,29 @@ var testCommand = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		day, year, lang, flagErr := getFlags(cmd)
 		if flagErr != nil {
-			cli.PrintError(flagErr)
+			cli.PrintFromError(flagErr).PrintError()
 			return
 		}
 
 		task, taskErr := getTask(args)
 		if taskErr != nil {
-			cli.PrintError(taskErr)
+			cli.PrintFromError(taskErr).PrintError()
 			return
 		}
 
-		cli.PrintDebug(fmt.Sprintf("Testing task %d of day %d in year %d using language %s", task, day, year, lang))
+		cli.ToPrintf("Testing task %d of day %d in year %d using language %s", task, day, year, lang).PrintDebug()
 		runResult := runner.TestDay(year, day, task, lang)
 		expectedResult, err := aocweb.GetResource(fmt.Sprintf("testOutput%d", task), year, day)
 		if err != nil {
-			cli.PrintWarning("Could not get solution for example data.")
-			cli.PrintDebugError(err)
-			cli.PrintSuccessFmt("Your soulution: %s", runResult[len(runResult)-1])
+			cli.ToPrint("Could not get solution for example data.").PrintWarning()
+			cli.PrintFromError(err).PrintDebug()
+			cli.ToPrintf("Your soulution: %s", runResult[len(runResult)-1]).PrintSuccess()
 		} else if runResult[len(runResult)-1] == expectedResult {
-			cli.PrintSuccess("Your solution is correct!")
-			cli.PrintDebug(fmt.Sprintf("Expected: %s", expectedResult))
-			cli.PrintDebug(fmt.Sprintf("Got: %s", runResult[len(runResult)-1]))
+			cli.ToPrint("Your solution is correct!").PrintSuccess()
+			cli.ToPrintf("Expected: %s", expectedResult).PrintDebug()
+			cli.ToPrintf("Got: %s", runResult[len(runResult)-1]).PrintDebug()
 		} else {
-			cli.PrintErrorFmt("Your solution does not match the expected result.\n Expected: %s\n Got: %s", expectedResult, runResult[len(runResult)-1])
+			cli.ToPrintf("Your solution does not match the expected result.\n Expected: %s\n Got: %s", expectedResult, runResult[len(runResult)-1]).PrintError()
 		}
 	},
 }

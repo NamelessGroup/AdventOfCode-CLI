@@ -17,13 +17,13 @@ var resources = make(map[string]Resource)
 func init() {
 	resources["challenge1"] = Resource{
 		fileName: "challenge1.md",
-		getter:   (func(day int, year int) (string, error) {
+		getter: (func(day int, year int) (string, error) {
 			return GetDayPage(day, year, 1)
 		}),
 	}
 	resources["challenge2"] = Resource{
 		fileName: "challenge2.md",
-		getter:   (func(day int, year int) (string, error) {
+		getter: (func(day int, year int) (string, error) {
 			return GetDayPage(day, year, 2)
 		}),
 	}
@@ -50,33 +50,33 @@ func init() {
 }
 
 func GetResource(name string, day int, year int) (string, error) {
-	cli.PrintDebugFmt("Getting resource %s for day %d year %d", name, day, year)
+	cli.ToPrintf("Getting resource %s for day %d year %d", name, day, year).PrintDebug()
 	resource, foundResource := resources[name]
 	if !foundResource {
 		return "", utils.AOCCLIErrorf("Resource %s not registered", name)
 	}
 
-	cli.PrintDebugFmt("Looking for file %d/%d/%s", year, day, resource.fileName)
+	cli.ToPrintf("Looking for file %d/%d/%s", year, day, resource.fileName).PrintDebug()
 	dir := utils.GetChallengeDirectory(year, day)
 	fileContent, err := os.ReadFile(fmt.Sprintf("%s/%s", dir, resource.fileName))
 	fileContentString := string(fileContent)
 	if err == nil && fileContentString == "" {
-		cli.PrintWarningFmt("Local file of resource %s found, but was empty", fmt.Sprintf("%d/%d/%s", year, day, resource.fileName))
+		cli.ToPrintf("Local file of resource %s found, but was empty", fmt.Sprintf("%d/%d/%s", year, day, resource.fileName)).PrintWarning()
 	}
 	if err == nil && fileContentString != "" {
-		cli.PrintDebugFmt("Local file of resource %s found", name)
-		cli.PrintDebug(fileContentString)
+		cli.ToPrintf("Local file of resource %s found", name).PrintDebug()
+		cli.ToPrint(fileContentString).PrintDebug()
 		return fileContentString, nil
 	}
-	cli.PrintDebugFmt("Local file of resource %s not found", name)
+	cli.ToPrintf("Local file of resource %s not found", name).PrintDebug()
 	resourceContent, err := resource.getter(day, year)
 	if err != nil {
 		return "", err
 	}
 
-	cli.PrintDebugFmt("Found Resource %s:", name)
-	cli.PrintDebug(resourceContent)
-	cli.PrintDebugFmt("Saving resource %s", name)
+	cli.ToPrintf("Found Resource %s:", name).PrintDebug()
+	cli.ToPrint(resourceContent).PrintDebug()
+	cli.ToPrintf("Saving resource %s", name).PrintDebug()
 
 	resource.saveToFile(year, day, resourceContent)
 	return resourceContent, nil
@@ -86,7 +86,7 @@ func (resource Resource) saveToFile(year int, day int, content string) {
 	dir := utils.GetChallengeDirectory(year, day)
 	err := os.WriteFile(fmt.Sprintf("%s/%s", dir, resource.fileName), []byte(content), 0644)
 	if err != nil {
-		cli.PrintDebug("Could not save resource to file:")
-		cli.PrintDebugError(err)
+		cli.ToPrint("Could not save resource to file:").PrintDebug()
+		cli.PrintFromError(err).PrintDebug()
 	}
 }
