@@ -10,21 +10,28 @@ import (
 	"github.com/spf13/viper"
 )
 
+// This is to make viper work correctly, if the same flag is defined multiple times (e.g. in different commands)
+var (
+	_langFlag          string
+	_disableEmojisFlag bool
+	_cookieFlag        string
+)
+
 func addPersistentFlags(cmd *cobra.Command) {
 	currentTime := time.Now()
 
-	cmd.PersistentFlags().StringP("lang", "l", "", "Language to run")
+	cmd.PersistentFlags().StringVarP(&_langFlag, "lang", "l", "", "Language to run")
 	viper.BindPFlag("language", cmd.PersistentFlags().Lookup("lang"))
 	cmd.PersistentFlags().IntP("day", "d", currentTime.Day(), "Day to run")
 	cmd.PersistentFlags().IntP("year", "y", currentTime.Year(), "Year to run")
 	cmd.PersistentFlags().Bool("debug", false, "Enable debug output")
 
-	cmd.PersistentFlags().Bool("disable-emojis", false, "Disable emojis in the output")
+	cmd.PersistentFlags().BoolVar(&_disableEmojisFlag, "disable-emojis", false, "Disable emojis in the output")
 	viper.BindPFlag("disableEmojis", cmd.PersistentFlags().Lookup("disable-emojis"))
 }
 
 func addCookieFlag(cmd *cobra.Command) {
-	cmd.Flags().StringP("cookie", "c", viper.GetString("cookie"), "Cookie for web requests")
+	cmd.Flags().StringVarP(&_cookieFlag, "cookie", "c", "", "Cookie for web requests")
 	viper.BindPFlag("cookie", cmd.Flags().Lookup("cookie"))
 }
 
