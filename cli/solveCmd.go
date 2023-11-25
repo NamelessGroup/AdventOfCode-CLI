@@ -2,6 +2,7 @@ package cli
 
 import (
 	"aoc-cli/aocweb"
+	"aoc-cli/cli/flags"
 	cli "aoc-cli/output"
 	"aoc-cli/runner"
 
@@ -13,13 +14,13 @@ var solveCommand = &cobra.Command{
 	Short: "Solves the given task (1 or 2)",
 	Long:  "Solves the given task (1 or 2). Defaults to 1. \n Uses the specified day or current day. \n Uses the specified language or default language.",
 	Run: func(cmd *cobra.Command, args []string) {
-		day, year, lang, flagErr := getFlags(cmd)
+		day, year, lang, flagErr := flags.GetFlags(cmd)
 		if flagErr != nil {
 			cli.PrintFromError(flagErr).PrintError()
 			return
 		}
 
-		task, taskErr := getTask(args)
+		task, taskErr := flags.GetTask(args)
 		if taskErr != nil {
 			cli.PrintFromError(taskErr).PrintError()
 			return
@@ -54,7 +55,7 @@ var solveCommand = &cobra.Command{
 
 func init() {
 	addCommand(solveCommand)
-	addPersistentFlags(solveCommand)
-	addCookieFlag(solveCommand)
-	addSubmitFlag(solveCommand)
+	flags.AddPersistentFlags(solveCommand)
+	flags.AddCookieFlag(solveCommand)
+	flags.AddSubmitFlag(solveCommand)
 }

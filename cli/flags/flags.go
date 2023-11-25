@@ -1,4 +1,4 @@
-package cli
+package flags
 
 import (
 	"aoc-cli/runner"
@@ -18,47 +18,47 @@ var (
 )
 
 var Flags = map[string]utils.FlagMetadata{
-	"lang":      {Description: "Language to use", DataType: "string", ViperKey: "language"},
-	"day":       {Description: "Day to use", DataType: "int"},
-	"year":      {Description: "Year to use", DataType: "int"},
+	"lang":      {Description: "Language to use", Shorthand: "l", DataType: "string", ViperKey: "language"},
+	"day":       {Description: "Day to use", Shorthand: "d", DataType: "int"},
+	"year":      {Description: "Year to use", Shorthand: "y", DataType: "int"},
 	"debug":     {Description: "Enable debug output", DataType: "bool"},
 	"no-emojis": {Description: "Disable emojis in the output", DataType: "bool", ViperKey: "noEmojis"},
-	"cookie":    {Description: "Cookie for web requests", DataType: "string", ViperKey: "cookie"},
+	"cookie":    {Description: "Cookie for web requests", Shorthand: "c", DataType: "string", ViperKey: "cookie"},
 	"task2":     {Description: "Include fetching the second challenge", DataType: "bool"},
-	"submit":    {Description: "Submit the solution to the server", DataType: "bool"},
+	"submit":    {Description: "Submit the solution to the server", Shorthand: "s", DataType: "bool"},
 }
 
-func addPersistentFlags(cmd *cobra.Command) {
+func AddPersistentFlags(cmd *cobra.Command) {
 	currentTime := time.Now()
 
-	cmd.PersistentFlags().StringVarP(&_langFlag, "lang", "l", "", Flags["lang"].Description)
+	cmd.PersistentFlags().StringVarP(&_langFlag, "lang", Flags["lang"].Shorthand, "", Flags["lang"].Description)
 	viper.BindPFlag(Flags["lang"].ViperKey, cmd.PersistentFlags().Lookup("lang"))
-	cmd.PersistentFlags().IntP("day", "d", currentTime.Day(), Flags["day"].Description)
-	cmd.PersistentFlags().IntP("year", "y", currentTime.Year(), Flags["year"].Description)
+	cmd.PersistentFlags().IntP("day", Flags["day"].Shorthand, currentTime.Day(), Flags["day"].Description)
+	cmd.PersistentFlags().IntP("year", Flags["year"].Shorthand, currentTime.Year(), Flags["year"].Description)
 	cmd.PersistentFlags().Bool("debug", false, Flags["debug"].Description)
 
 	cmd.PersistentFlags().BoolVar(&_disableEmojisFlag, "no-emojis", false, Flags["no-emojis"].Description)
 	viper.BindPFlag(Flags["no-emojis"].ViperKey, cmd.PersistentFlags().Lookup("no-emojis"))
 }
 
-func addCookieFlag(cmd *cobra.Command) {
-	cmd.Flags().StringVarP(&_cookieFlag, "cookie", "c", "", Flags["cookie"].Description)
+func AddCookieFlag(cmd *cobra.Command) {
+	cmd.Flags().StringVarP(&_cookieFlag, "cookie", Flags["cookie"].Shorthand, "", Flags["cookie"].Description)
 	viper.BindPFlag(Flags["cookie"].ViperKey, cmd.Flags().Lookup("cookie"))
 }
 
-func addSecondChallengeFlag(cmd *cobra.Command) {
+func AddSecondChallengeFlag(cmd *cobra.Command) {
 	cmd.Flags().Bool("task2", false, Flags["task2"].Description)
 }
 
-func addSubmitFlag(cmd *cobra.Command) {
-	cmd.Flags().BoolP("submit", "s", false, Flags["submit"].Description)
+func AddSubmitFlag(cmd *cobra.Command) {
+	cmd.Flags().BoolP("submit", Flags["submit"].Shorthand, false, Flags["submit"].Description)
 }
 
-func addConfigLanguageFlag(cmd *cobra.Command) {
-	cmd.Flags().StringP("lang", "l", "", Flags["lang"].Description)
+func AddConfigLanguageFlag(cmd *cobra.Command) {
+	cmd.Flags().StringP("lang", Flags["lang"].Shorthand, "", Flags["lang"].Description)
 }
 
-func getTask(args []string) (int, error) {
+func GetTask(args []string) (int, error) {
 	if len(args) == 0 {
 		return 1, nil
 	}
@@ -77,7 +77,7 @@ func getTask(args []string) (int, error) {
 /*
 Returns day, year, lang, error
 */
-func getFlags(cmd *cobra.Command) (int, int, runner.Language, error) {
+func GetFlags(cmd *cobra.Command) (int, int, runner.Language, error) {
 	day, dayErr := cmd.Flags().GetInt("day")
 	year, yearErr := cmd.Flags().GetInt("year")
 	if dayErr != nil {
@@ -98,7 +98,7 @@ func getFlags(cmd *cobra.Command) (int, int, runner.Language, error) {
 		return -1, -1, nil, utils.AOCCLIError("Day must be between 1 and 25").DebugInfof("cli", "Inputted day: %d", day)
 	}
 
-	lang := viper.GetString("language")
+	lang := viper.GetString(Flags["lang"].ViperKey)
 	langResolved, err := runner.ResolveLanguage(lang)
 	if err != nil {
 		return -1, -1, nil, err

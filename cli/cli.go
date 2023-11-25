@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"aoc-cli/cli/flags"
 	cli "aoc-cli/output"
 
 	"github.com/spf13/cobra"
@@ -16,7 +17,7 @@ var rootCmd = &cobra.Command{
 	},
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
 		debug, _ := cmd.Flags().GetBool("debug")
-		disableEmojis := viper.GetBool("noEmojis")
+		disableEmojis := viper.GetBool(flags.Flags["no-emojis"].ViperKey)
 		cli.PrintDebugMessages = debug
 		cli.DisableEmojis = disableEmojis
 	},

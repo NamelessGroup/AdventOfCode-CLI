@@ -2,6 +2,7 @@ package cli
 
 import (
 	"aoc-cli/aocweb"
+	"aoc-cli/cli/flags"
 	cli "aoc-cli/output"
 	"aoc-cli/utils"
 	"errors"
@@ -16,7 +17,7 @@ var initCommand = &cobra.Command{
 	Short: "Sets up the files for a given day",
 	Long:  "Sets up the files for a given day. \n If no day is specified it uses the current day. \n If no language is specified it uses your default language.",
 	Run: func(cmd *cobra.Command, args []string) {
-		day, year, lang, flagErr := getFlags(cmd)
+		day, year, lang, flagErr := flags.GetFlags(cmd)
 		if flagErr != nil {
 			cli.PrintFromError(flagErr).PrintError()
 			return
@@ -73,7 +74,7 @@ var initCommand = &cobra.Command{
 
 func init() {
 	addCommand(initCommand)
-	addPersistentFlags(initCommand)
-	addCookieFlag(initCommand)
-	addSecondChallengeFlag(initCommand)
+	flags.AddPersistentFlags(initCommand)
+	flags.AddCookieFlag(initCommand)
+	flags.AddSecondChallengeFlag(initCommand)
 }

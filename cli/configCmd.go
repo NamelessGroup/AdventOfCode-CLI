@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"aoc-cli/cli/flags"
 	cli "aoc-cli/output"
 	"aoc-cli/runner"
 	"aoc-cli/utils"
@@ -87,15 +88,15 @@ var configCommand = &cobra.Command{
 
 func init() {
 	addCommand(configCommand)
-	addConfigLanguageFlag(configCommand)
+	flags.AddConfigLanguageFlag(configCommand)
 }
 
 func getValidConfigs() map[string]utils.FlagMetadata {
 	result := map[string]utils.FlagMetadata{}
 
-	for k := range Flags {
-		if Flags[k].ViperKey != "" {
-			result[k] = Flags[k]
+	for k := range flags.Flags {
+		if flags.Flags[k].ViperKey != "" {
+			result[k] = flags.Flags[k]
 		}
 	}
 
