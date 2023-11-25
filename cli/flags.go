@@ -38,7 +38,7 @@ func addPersistentFlags(cmd *cobra.Command) {
 	cmd.PersistentFlags().Bool("debug", false, Flags["debug"].Description)
 
 	cmd.PersistentFlags().BoolVar(&_disableEmojisFlag, "no-emojis", false, Flags["no-emojis"].Description)
-	viper.BindPFlag(Flags["no-emojis"].Description, cmd.PersistentFlags().Lookup("no-emojis"))
+	viper.BindPFlag(Flags["no-emojis"].ViperKey, cmd.PersistentFlags().Lookup("no-emojis"))
 }
 
 func addCookieFlag(cmd *cobra.Command) {
