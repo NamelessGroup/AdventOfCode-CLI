@@ -34,6 +34,6 @@ func (j Java) GetFilesToWrite() []utils.FileTemplate {
 	return []utils.FileTemplate{runnerFile, taskFile}
 }
 
-func (j Java) GetLanguageSpecificConfigKeys() map[string]utils.FlagMetadata {
-	return map[string]utils.FlagMetadata{}
+func (j Java) GetLanguageSpecificConfigKeys() map[string]utils.LanguageSpecificOption {
+	return map[string]utils.LanguageSpecificOption{}
 }

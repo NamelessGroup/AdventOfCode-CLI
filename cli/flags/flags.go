@@ -10,52 +10,28 @@ import (
 	"github.com/spf13/viper"
 )
 
-// This is to make viper work correctly, if the same flag is defined multiple times (e.g. in different commands)
-var (
-	_langFlag          string
-	_disableEmojisFlag bool
-	_cookieFlag        string
-)
-
-var Flags = map[string]utils.FlagMetadata{
-	"lang":      {Description: "Language to use", Shorthand: "l", DataType: "string", ViperKey: "language"},
-	"day":       {Description: "Day to use", Shorthand: "d", DataType: "int"},
-	"year":      {Description: "Year to use", Shorthand: "y", DataType: "int"},
-	"debug":     {Description: "Enable debug output", DataType: "bool"},
-	"no-emojis": {Description: "Disable emojis in the output", DataType: "bool", ViperKey: "noEmojis"},
-	"cookie":    {Description: "Cookie for web requests", Shorthand: "c", DataType: "string", ViperKey: "cookie"},
-	"task2":     {Description: "Include fetching the second challenge", DataType: "bool"},
-	"submit":    {Description: "Submit the solution to the server", Shorthand: "s", DataType: "bool"},
-}
-
 func AddPersistentFlags(cmd *cobra.Command) {
-	currentTime := time.Now()
-
-	cmd.PersistentFlags().StringVarP(&_langFlag, "lang", Flags["lang"].Shorthand, "", Flags["lang"].Description)
-	viper.BindPFlag(Flags["lang"].ViperKey, cmd.PersistentFlags().Lookup("lang"))
-	cmd.PersistentFlags().IntP("day", Flags["day"].Shorthand, currentTime.Day(), Flags["day"].Description)
-	cmd.PersistentFlags().IntP("year", Flags["year"].Shorthand, currentTime.Year(), Flags["year"].Description)
-	cmd.PersistentFlags().Bool("debug", false, Flags["debug"].Description)
-
-	cmd.PersistentFlags().BoolVar(&_disableEmojisFlag, "no-emojis", false, Flags["no-emojis"].Description)
-	viper.BindPFlag(Flags["no-emojis"].ViperKey, cmd.PersistentFlags().Lookup("no-emojis"))
+	cmd.PersistentFlags().AddFlag(GetFlag("lang"))
+	cmd.PersistentFlags().AddFlag(GetFlag("day"))
+	cmd.PersistentFlags().AddFlag(GetFlag("year"))
+	cmd.PersistentFlags().AddFlag(GetFlag("debug"))
+	cmd.PersistentFlags().AddFlag(GetFlag("no-emojis"))
 }
 
 func AddCookieFlag(cmd *cobra.Command) {
-	cmd.Flags().StringVarP(&_cookieFlag, "cookie", Flags["cookie"].Shorthand, "", Flags["cookie"].Description)
-	viper.BindPFlag(Flags["cookie"].ViperKey, cmd.Flags().Lookup("cookie"))
+	cmd.Flags().AddFlag(GetFlag("cookie"))
 }
 
 func AddSecondChallengeFlag(cmd *cobra.Command) {
-	cmd.Flags().Bool("task2", false, Flags["task2"].Description)
+	cmd.Flags().AddFlag(GetFlag("task2"))
 }
 
 func AddSubmitFlag(cmd *cobra.Command) {
-	cmd.Flags().BoolP("submit", Flags["submit"].Shorthand, false, Flags["submit"].Description)
+	cmd.Flags().AddFlag(GetFlag("submit"))
 }
 
 func AddConfigLanguageFlag(cmd *cobra.Command) {
-	cmd.Flags().StringP("lang", Flags["lang"].Shorthand, "", Flags["lang"].Description)
+	cmd.Flags().AddFlag(GetFlag("lang"))
 }
 
 func GetTask(args []string) (int, error) {
@@ -98,7 +74,7 @@ func GetFlags(cmd *cobra.Command) (int, int, runner.Language, error) {
 		return -1, -1, nil, utils.AOCCLIError("Day must be between 1 and 25").DebugInfof("cli", "Inputted day: %d", day)
 	}
 
-	lang := viper.GetString(Flags["lang"].ViperKey)
+	lang := viper.GetString("language")
 	langResolved, err := runner.ResolveLanguage(lang)
 	if err != nil {
 		return -1, -1, nil, err

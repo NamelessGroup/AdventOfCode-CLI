@@ -1,7 +1,6 @@
 package aocweb
 
 import (
-	"aoc-cli/cli/flags"
 	cli "aoc-cli/output"
 	"aoc-cli/utils"
 	"bytes"
@@ -24,7 +23,7 @@ func get(day int, year int, path string) (string, error) {
 }
 
 func executeRequest(req *http.Request) (string, error) {
-	cookie := viper.GetString(flags.Flags["cookie"].ViperKey)
+	cookie := viper.GetString("cookie")
 	if cookie == "" {
 		return "", utils.AOCCLIError("No cookie set. Please set the cookie using the --cookie flag or the config file")
 	}

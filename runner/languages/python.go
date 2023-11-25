@@ -43,8 +43,8 @@ func (p Python) GetFilesToWrite() []utils.FileTemplate {
 	return []utils.FileTemplate{runnerFile, taskFile}
 }
 
-func (p Python) GetLanguageSpecificConfigKeys() map[string]utils.FlagMetadata {
-	return map[string]utils.FlagMetadata{
-		"executable": {Description: "Python executable to run", DataType: "string", ViperKey: "executable"},
+func (p Python) GetLanguageSpecificConfigKeys() map[string]utils.LanguageSpecificOption {
+	return map[string]utils.LanguageSpecificOption{
+		"executable": {Description: "Python executable to run", DataType: "string"},
 	}
 }

@@ -10,7 +10,7 @@ type Language interface {
 	GetTestCommand(directoryPath string, task int) utils.ExecutionDetails
 	GetPreparationCommand(directoryPath string, task int) []utils.ExecutionDetails
 	GetFilesToWrite() []utils.FileTemplate
-	GetLanguageSpecificConfigKeys() map[string]utils.FlagMetadata
+	GetLanguageSpecificConfigKeys() map[string]utils.LanguageSpecificOption
 }
 
 func ResolveLanguage(lang string) (Language, error) {
