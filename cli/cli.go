@@ -16,7 +16,7 @@ var rootCmd = &cobra.Command{
 	},
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
 		debug, _ := cmd.Flags().GetBool("debug")
-		disableEmojis := viper.GetBool("disableEmojis")
+		disableEmojis := viper.GetBool("noEmojis")
 		cli.PrintDebugMessages = debug
 		cli.DisableEmojis = disableEmojis
 	},

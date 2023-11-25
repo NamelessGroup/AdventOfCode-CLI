@@ -20,28 +20,23 @@ var configCommand = &cobra.Command{
 	Short: "Sets the config in the config file",
 	Long:  "",
 	Run: func(cmd *cobra.Command, args []string) {
-		validConfigs := []string{"cookie", "language", "disableEmojis"}
+		validConfigs := getValidConfigs()
 
 		if len(args) == 1 && args[0] == "list" {
 			// List all valid options
 
 			cli.ToPrint("Available config options:").PrintLog()
 			for _, validCfg := range validConfigs {
-				cli.ToPrintf("    %s", validCfg).Print()
+				cli.ToPrintf("    %s [%s] - %s", validCfg.ViperKey, validCfg.DataType, validCfg.Description).Print()
 			}
 
 			languageStr, err := cmd.Flags().GetString("lang")
-			if err == nil && languageStr != "" {
-				languageObj, err := runner.ResolveLanguage(languageStr)
-				if err != nil {
-					cli.ToPrintf("Language %s not found", languageStr).PrintWarning()
-					return
-				}
-				languageOptions := languageObj.GetLanguageSpecificConfigKeys()
+			if err == nil {
+				languageOptions := getLanguageSpecificConfigKeys(languageStr)
 				if len(languageOptions) > 0 {
 					cli.ToPrintf("Available language specific options for %s:", languageStr).PrintLog()
 					for _, validCfg := range languageOptions {
-						cli.ToPrintf("    %s", validCfg).Print()
+						cli.ToPrintf("    %s [%s] - %s", validCfg.ViperKey, validCfg.DataType, validCfg.Description).Print()
 					}
 				} else {
 					cli.ToPrintf("Language %s has no specific options.", languageStr).PrintLog()
@@ -69,20 +64,15 @@ var configCommand = &cobra.Command{
 		configName := args[0]
 		configValue := args[1]
 
-		languageSpecificOptions := []string{}
+		languageSpecificOptions := map[string]utils.FlagMetadata{}
 		languageStr, err := cmd.Flags().GetString("lang")
-		if err == nil && languageStr != "" {
-			languageObj, err := runner.ResolveLanguage(languageStr)
-			if err != nil {
-				cli.ToPrintf("Language %s not found", languageStr).PrintWarning()
-				return
-			}
-			languageSpecificOptions = languageObj.GetLanguageSpecificConfigKeys()
+		if err == nil {
+			languageSpecificOptions = getLanguageSpecificConfigKeys(languageStr)
 		}
 
-		if slices.Contains(languageSpecificOptions, configName) {
+		if slices.Contains(getConfigKeys(languageSpecificOptions), configName) {
 			viper.Set(fmt.Sprintf("languages.%s.%s", languageStr, configName), configValue)
-		} else if !slices.Contains(validConfigs, configName) {
+		} else if !slices.Contains(getConfigKeys(validConfigs), configName) {
 			cli.PrintFromError(utils.AOCCLIErrorf("%s is not a valid config point", configName)).PrintError()
 			return
 		}
@@ -98,4 +88,39 @@ var configCommand = &cobra.Command{
 func init() {
 	addCommand(configCommand)
 	addConfigLanguageFlag(configCommand)
+}
+
+func getValidConfigs() map[string]utils.FlagMetadata {
+	result := map[string]utils.FlagMetadata{}
+
+	for k := range Flags {
+		if Flags[k].ViperKey != "" {
+			result[k] = Flags[k]
+		}
+	}
+
+	return result
+}
+
+func getLanguageSpecificConfigKeys(lang string) map[string]utils.FlagMetadata {
+	if lang == "" {
+		return map[string]utils.FlagMetadata{}
+	}
+
+	languageObj, err := runner.ResolveLanguage(lang)
+	if err != nil {
+		cli.ToPrintf("Language %s not found", lang).PrintWarning()
+		return map[string]utils.FlagMetadata{}
+	}
+	return languageObj.GetLanguageSpecificConfigKeys()
+}
+
+func getConfigKeys(flags map[string]utils.FlagMetadata) []string {
+	result := []string{}
+
+	for k := range flags {
+		result = append(result, flags[k].ViperKey)
+	}
+
+	return result
 }

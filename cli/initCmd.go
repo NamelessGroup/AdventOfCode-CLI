@@ -25,7 +25,7 @@ var initCommand = &cobra.Command{
 		cli.ToPrintf("Initializing day %d in year %d using language %s", day, year, lang).PrintDebug()
 
 		resourcesToGet := []string{"challenge1", "solveInput", "testInput", "testOutput1"}
-		getSecond, err := cmd.Flags().GetBool("second")
+		getSecond, err := cmd.Flags().GetBool("task2")
 		if err == nil && getSecond {
 			resourcesToGet = append(resourcesToGet, "challenge2", "testOutput2")
 		}

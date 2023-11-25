@@ -17,34 +17,45 @@ var (
 	_cookieFlag        string
 )
 
+var Flags = map[string]utils.FlagMetadata{
+	"lang":      {Description: "Language to use", DataType: "string", ViperKey: "language"},
+	"day":       {Description: "Day to use", DataType: "int"},
+	"year":      {Description: "Year to use", DataType: "int"},
+	"debug":     {Description: "Enable debug output", DataType: "bool"},
+	"no-emojis": {Description: "Disable emojis in the output", DataType: "bool", ViperKey: "noEmojis"},
+	"cookie":    {Description: "Cookie for web requests", DataType: "string", ViperKey: "cookie"},
+	"task2":     {Description: "Include fetching the second challenge", DataType: "bool"},
+	"submit":    {Description: "Submit the solution to the server", DataType: "bool"},
+}
+
 func addPersistentFlags(cmd *cobra.Command) {
 	currentTime := time.Now()
 
-	cmd.PersistentFlags().StringVarP(&_langFlag, "lang", "l", "", "Language to run")
-	viper.BindPFlag("language", cmd.PersistentFlags().Lookup("lang"))
-	cmd.PersistentFlags().IntP("day", "d", currentTime.Day(), "Day to run")
-	cmd.PersistentFlags().IntP("year", "y", currentTime.Year(), "Year to run")
-	cmd.PersistentFlags().Bool("debug", false, "Enable debug output")
+	cmd.PersistentFlags().StringVarP(&_langFlag, "lang", "l", "", Flags["lang"].Description)
+	viper.BindPFlag(Flags["lang"].ViperKey, cmd.PersistentFlags().Lookup("lang"))
+	cmd.PersistentFlags().IntP("day", "d", currentTime.Day(), Flags["day"].Description)
+	cmd.PersistentFlags().IntP("year", "y", currentTime.Year(), Flags["year"].Description)
+	cmd.PersistentFlags().Bool("debug", false, Flags["debug"].Description)
 
-	cmd.PersistentFlags().BoolVar(&_disableEmojisFlag, "disable-emojis", false, "Disable emojis in the output")
-	viper.BindPFlag("disableEmojis", cmd.PersistentFlags().Lookup("disable-emojis"))
+	cmd.PersistentFlags().BoolVar(&_disableEmojisFlag, "no-emojis", false, Flags["no-emojis"].Description)
+	viper.BindPFlag(Flags["no-emojis"].Description, cmd.PersistentFlags().Lookup("no-emojis"))
 }
 
 func addCookieFlag(cmd *cobra.Command) {
-	cmd.Flags().StringVarP(&_cookieFlag, "cookie", "c", "", "Cookie for web requests")
-	viper.BindPFlag("cookie", cmd.Flags().Lookup("cookie"))
+	cmd.Flags().StringVarP(&_cookieFlag, "cookie", "c", "", Flags["cookie"].Description)
+	viper.BindPFlag(Flags["cookie"].ViperKey, cmd.Flags().Lookup("cookie"))
 }
 
 func addSecondChallengeFlag(cmd *cobra.Command) {
-	cmd.Flags().Bool("second", false, "Include fetching the second challange")
+	cmd.Flags().Bool("task2", false, Flags["task2"].Description)
 }
 
 func addSubmitFlag(cmd *cobra.Command) {
-	cmd.Flags().BoolP("submit", "s", false, "Submit the solution to the server")
+	cmd.Flags().BoolP("submit", "s", false, Flags["submit"].Description)
 }
 
 func addConfigLanguageFlag(cmd *cobra.Command) {
-	cmd.Flags().StringP("lang", "l", "", "Language to list options from")
+	cmd.Flags().StringP("lang", "l", "", Flags["lang"].Description)
 }
 
 func getTask(args []string) (int, error) {

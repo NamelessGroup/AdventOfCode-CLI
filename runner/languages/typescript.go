@@ -32,6 +32,6 @@ func (ts TypeScript) GetFilesToWrite() []utils.FileTemplate {
 	return []utils.FileTemplate{runnerFile, taskFile}
 }
 
-func (ts TypeScript) GetLanguageSpecificConfigKeys() []string {
-	return []string{}
+func (ts TypeScript) GetLanguageSpecificConfigKeys() map[string]utils.FlagMetadata {
+	return map[string]utils.FlagMetadata{}
 }
