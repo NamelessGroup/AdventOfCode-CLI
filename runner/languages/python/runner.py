@@ -13,7 +13,7 @@ def parse_input(input_file_path: str) -> list[str]:
 
 if __name__ == "__main__":
     if len(sys.argv) <= 2 or sys.argv[2] == "main":
-        input_file = os.path.dirname(__file__) + "/input.in"
+        input_file = os.path.dirname(__file__) + "/solve.in"
     elif sys.argv[2] == "test":
         input_file = os.path.dirname(__file__) + "/test.in"
         if not os.path.exists(input_file):

@@ -4,6 +4,7 @@ import (
 	"aoc-cli/utils"
 	"errors"
 	"fmt"
+	"os"
 
 	"github.com/fatih/color"
 )
@@ -156,6 +157,7 @@ func (p *Printable) PrintError() {
 	}
 	p.color = ColorError
 	p.Print()
+	os.Exit(1)
 }
 
 func (p *Printable) PrintDebug() {
