@@ -29,7 +29,7 @@ var testCommand = &cobra.Command{
 
 		cli.ToPrintf("Testing task %d of day %d in year %d using language %s", task, day, year, lang).PrintDebug()
 		runResult := runner.TestDay(year, day, task, lang)
-		expectedResult, err := aocweb.GetResource(fmt.Sprintf("testOutput%d", task), year, day)
+		expectedResult, err := aocweb.GetResource(fmt.Sprintf("testOutput%d", task), day, year)
 		if err != nil {
 			cli.ToPrint("Could not get solution for example data.").PrintWarning()
 			cli.PrintFromError(err).PrintDebug()
