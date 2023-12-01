@@ -5,6 +5,7 @@ import (
 	"aoc-cli/utils"
 	"bytes"
 	"fmt"
+	"strings"
 
 	"net/http"
 	"regexp"
@@ -106,7 +107,7 @@ func GetTestInput(day int, year int) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return regexp.MustCompile("```([^`]*)```").FindStringSubmatch(dayPage)[1], nil
+	return strings.Trim(regexp.MustCompile("```([^`]*)```").FindStringSubmatch(dayPage)[1], "\n"), nil
 }
 
 func GetTestOutput(day int, year int, task int) (string, error) {
