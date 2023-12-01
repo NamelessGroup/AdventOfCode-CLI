@@ -2,3 +2,6 @@ __pycache__
 .aoc/SESSION_TOKEN
 .venv
 .DS_Store
+
+20**/**
+aoc-cli-config.json
