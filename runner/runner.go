@@ -118,7 +118,13 @@ func runTask(day int, task int, executionDetails utils.ExecutionDetails, executi
 	} else {
 		cli.ToPrintf("Task %d failed execution after %s with exit code %d", task, result.executionDuration.Truncate(10000), result.exitCode).PrintError()
 	}
-	return result.stdout
+
+	if len(result.stdout) == 0 {
+		cli.ToPrint("Your code didn't output anything!").PrintWarning()
+		return []string{""}
+	} else {
+		return result.stdout
+	}
 }
 
 func SolveDay(year int, day int, task int, languageObject Language) []string {

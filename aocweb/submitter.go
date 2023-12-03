@@ -33,6 +33,10 @@ func postAnswer(day int, year int, task int, solution string) (string, error) {
 }
 
 func Submit(day int, year int, task int, solution string) error {
+	if solution == "" {
+		return utils.AOCCLIError("Can't submit empty answer!")
+	}
+
 	result, err := postAnswer(day, year, task, solution)
 	if err != nil {
 		return utils.AOCCLIError("Error submitting answer!").DebugInfo("submitter", err.Error())
