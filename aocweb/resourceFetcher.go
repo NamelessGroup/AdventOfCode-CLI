@@ -99,7 +99,11 @@ func replaceTagRegex(text string, tagRegex string, replacement string) string {
 }
 
 func GetSolveInput(day int, year int) (string, error) {
-	return get(day, year, "/input")
+	result, err := get(day, year, "/input")
+	if err != nil {
+		return "", err
+	}
+	return strings.Trim(result, "\n"), nil
 }
 
 func GetTestInput(day int, year int) (string, error) {
