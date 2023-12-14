@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"fmt"
 	"strings"
 	"time"
 )
@@ -19,12 +20,15 @@ func (s *Spinner) Run(message string) {
 	go s.draw()
 }
 
-func (s *Spinner) draw() {
+func (s *Spinner) toString() string {
 	frames := strings.Split("⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏", "")
+	s._frame = (s._frame + 1) % len(frames)
+	return fmt.Sprintf("%s %s", frames[s._frame], s._message)
+}
 
+func (s *Spinner) draw() {
 	for !s._stop {
-		s._frame = (s._frame + 1) % len(frames)
-		ToPrintf("%s %s", frames[s._frame], s._message).NewLine(false).Print()
+		ToPrint(s.toString()).NewLine(false).Print()
 		time.Sleep(100 * time.Millisecond)
 	}
 }
@@ -32,4 +36,8 @@ func (s *Spinner) draw() {
 func (s *Spinner) Stop() {
 	s._stop = true
 	ToPrint("").NewLine(false).Print()
+}
+
+func (s *Spinner) Reprint() {
+	ToPrint(s.toString()).NewLine(false).Print()
 }
