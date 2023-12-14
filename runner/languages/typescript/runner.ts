@@ -16,7 +16,7 @@ async function main() {
     const fileToLoad = isTest ? "test.in" : "solve.in";
     const fileContents = await readFile(fileToLoad, "utf-8")
     
-    const lines = fileContents.split("\n");
+    const lines = fileContents.trimEnd().split("\n");
 
     if (taskNumber === 1) {
         await taskOne(lines);
