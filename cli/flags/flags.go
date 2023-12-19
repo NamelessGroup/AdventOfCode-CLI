@@ -55,12 +55,9 @@ Returns day, year, lang, error
 */
 func GetFlags(cmd *cobra.Command) (int, int, runner.Language, error) {
 	day, dayErr := cmd.Flags().GetInt("day")
-	year, yearErr := cmd.Flags().GetInt("year")
+	year := viper.GetInt("year")
 	if dayErr != nil {
 		return -1, -1, nil, dayErr
-	}
-	if yearErr != nil {
-		return -1, -1, nil, yearErr
 	}
 
 	currentTime := time.Now()
