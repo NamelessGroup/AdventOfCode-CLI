@@ -40,6 +40,7 @@ func init() {
 	viperConfigToFlagName["language"] = "lang"
 	viperConfigToFlagName["noEmojis"] = "no-emojis"
 	viperConfigToFlagName["cookie"] = "cookie"
+	viperConfigToFlagName["year"] = "year"
 
 	// Binding viper
 	for viperKey, flagName := range viperConfigToFlagName {
