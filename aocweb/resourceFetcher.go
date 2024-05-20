@@ -111,7 +111,13 @@ func GetTestInput(day int, year int) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return strings.Trim(regexp.MustCompile("```([^`]*)```").FindStringSubmatch(dayPage)[1], "\n"), nil
+	submatches := regexp.MustCompile("```([^`]*)```").FindStringSubmatch(dayPage)
+	if submatches == nil || len(submatches) < 2 {
+		cli.ToPrint("No test input found").PrintWarning()
+		cli.ToPrint("An empty file was created. You can copy the test input into the file test.in").PrintDebug()
+		return "", nil
+	}
+	return strings.Trim(submatches[1], "\n"), nil
 }
 
 func GetTestOutput(day int, year int, task int) (string, error) {
@@ -122,7 +128,8 @@ func GetTestOutput(day int, year int, task int) (string, error) {
 
 	matches := regexp.MustCompile("[*][*]`[^`]*`[*][*]").FindStringSubmatch(dayPage)
 	if matches == nil {
-		return "", utils.AOCCLIError("No test output found")
+		cli.ToPrint("No test output found").PrintWarning()
+		return "", nil
 	}
 	rawMatch := matches[len(matches)-1]
 	return rawMatch[3 : len(rawMatch)-3], nil
