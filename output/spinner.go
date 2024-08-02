@@ -25,7 +25,7 @@ func (s *Spinner) Run(message string, showTime bool) {
 }
 
 func (s *Spinner) toString() string {
-	frames := strings.Split("⠋⠙⠸⠼⠴⠦⠧⠇⠏", "")
+	frames := strings.Split("⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏", "")
 	s._frame = (s._frame + 1) % len(frames)
 	result := fmt.Sprintf("%s %s", frames[s._frame], s._message)
 	if s._showTime {
