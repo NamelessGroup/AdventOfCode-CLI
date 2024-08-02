@@ -7,26 +7,32 @@ import (
 )
 
 type Spinner struct {
-	_frame   int
-	_message string
-	_stop    bool
-	_time    int
+	_frame    int
+	_message  string
+	_stop     bool
+	_time     int
+	_showTime bool
 }
 
-func (s *Spinner) Run(message string) {
+func (s *Spinner) Run(message string, showTime bool) {
 	s._stop = false
 	s._frame = 0
 	s._message = message
 	s._time = 0
+	s._showTime = showTime
 
 	go s.draw()
 }
 
 func (s *Spinner) toString() string {
-	frames := strings.Split("⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏", "")
+	frames := strings.Split("⠋⠙⠸⠼⠴⠦⠧⠇⠏", "")
 	s._frame = (s._frame + 1) % len(frames)
-	var formattedTime, _ = time.ParseDuration(fmt.Sprintf("%dms", s._time))
-	return fmt.Sprintf("%s %s (%s elapsed)", frames[s._frame], s._message, formattedTime.Truncate(10000).String())
+	result := fmt.Sprintf("%s %s", frames[s._frame], s._message)
+	if s._showTime {
+		var formattedTime, _ = time.ParseDuration(fmt.Sprintf("%dms", s._time))
+		return fmt.Sprintf("%s (%s elapsed)", result, formattedTime.Truncate(10000).String())
+	}
+	return result
 }
 
 func (s *Spinner) draw() {

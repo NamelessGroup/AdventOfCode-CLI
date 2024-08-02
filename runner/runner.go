@@ -116,7 +116,7 @@ func prepareTask(year int, day int, task int, lang Language) {
 
 func runTask(day int, task int, executionDetails utils.ExecutionDetails, executionDirectory string) []string {
 	s := cli.Spinner{}
-	s.Run(fmt.Sprintf("Running day %d task %d", day, task))
+	s.Run(fmt.Sprintf("Running day %d task %d", day, task), true)
 	result := runCommand(true, executionDetails, executionDirectory, &s)
 	s.Stop()
 	if result.exitCode == 0 {
