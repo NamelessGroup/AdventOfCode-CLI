@@ -60,7 +60,7 @@ func runCommand(streamOutput bool, toRun utils.ExecutionDetails, workingDirector
 	for scanner.Scan() {
 		m := scanner.Text()
 		if streamOutput {
-			cli.ToPrint(m).Color(color.FgCyan).Italic().Print()
+			cli.ToPrintf("$ %s", m).Color(color.FgCyan).Italic().Print()
 			if s != nil {
 				s.Reprint()
 			}
@@ -73,7 +73,7 @@ func runCommand(streamOutput bool, toRun utils.ExecutionDetails, workingDirector
 	for errScanner.Scan() {
 		m := errScanner.Text()
 		if streamOutput {
-			cli.ToPrint(m).Color(color.FgCyan).Italic().Print()
+			cli.ToPrintf("$ %s", m).Color(color.FgCyan).Italic().Print()
 			if s != nil {
 				s.Reprint()
 			}
