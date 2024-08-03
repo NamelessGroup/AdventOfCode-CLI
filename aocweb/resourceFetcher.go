@@ -90,6 +90,11 @@ func GetDayPage(day int, year int, task int) (string, error) {
 	// eliminate classname of body tag
 	wholeArticle = regexp.MustCompile(" class=\"day-desc\">").ReplaceAllString(wholeArticle, "")
 
+	// replace html entities
+	wholeArticle = strings.ReplaceAll(wholeArticle, "&lt;", "<")
+	wholeArticle = strings.ReplaceAll(wholeArticle, "&gt;", ">")
+	wholeArticle = strings.ReplaceAll(wholeArticle, "&amp;", "&")
+
 	return wholeArticle, nil
 }
 
