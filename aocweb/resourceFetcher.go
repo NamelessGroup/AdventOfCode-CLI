@@ -6,11 +6,11 @@ import (
 	"bytes"
 	"fmt"
 	"strings"
-
 	"net/http"
 	"regexp"
 
 	"github.com/spf13/viper"
+	"html"
 )
 
 func get(day int, year int, path string) (string, error) {
@@ -46,11 +46,11 @@ func executeRequest(req *http.Request) (string, error) {
 }
 
 func GetDayPage(day int, year int, task int) (string, error) {
-	html, err := get(day, year, "")
+	htmlText, err := get(day, year, "")
 	if err != nil {
 		return "", err
 	}
-	wholeArticle := regexp.MustCompile("(?ms)<article(.*?)</article>").FindAllStringSubmatch(html, -1)[task-1][1]
+	wholeArticle := regexp.MustCompile("(?ms)<article(.*?)</article>").FindAllStringSubmatch(htmlText, -1)[task-1][1]
 	wholeArticle = replaceTagRegex(wholeArticle, "</?article>", "")
 
 	wholeArticle = replaceTagRegex(wholeArticle, "<pre><code>", "\n```\n")
@@ -90,12 +90,7 @@ func GetDayPage(day int, year int, task int) (string, error) {
 	// eliminate classname of body tag
 	wholeArticle = regexp.MustCompile(" class=\"day-desc\">").ReplaceAllString(wholeArticle, "")
 
-	// replace html entities
-	wholeArticle = strings.ReplaceAll(wholeArticle, "&lt;", "<")
-	wholeArticle = strings.ReplaceAll(wholeArticle, "&gt;", ">")
-	wholeArticle = strings.ReplaceAll(wholeArticle, "&amp;", "&")
-
-	return wholeArticle, nil
+	return html.UnescapeString(wholeArticle), nil
 }
 
 func replaceTagRegex(text string, tagRegex string, replacement string) string {
