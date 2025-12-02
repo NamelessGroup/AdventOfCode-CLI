@@ -50,6 +50,7 @@ Persistent configuration is saved inside the `aoc-cli-config.json` file, and can
 - TypeScript
 - Java
 - Haskell
+- Rust
 
 ## Contributing
 
